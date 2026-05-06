@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "@/api/client";
 
 interface FetchState<T> {
@@ -7,14 +7,27 @@ interface FetchState<T> {
   error: ApiError | Error | null;
 }
 
-export function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
+interface FetchOptions {
+  enabled?: boolean;
+  lazy?: boolean;
+}
+
+export function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[] = [], { enabled = true, lazy = false }: FetchOptions = {}) {
+  const [tick, setTick] = useState(0);
   const [state, setState] = useState<FetchState<T>>({
     data: null,
-    loading: true,
+    loading: enabled && !lazy,
     error: null,
   });
 
+  const refetch = useCallback(() => setTick((t) => t + 1), []);
+
   useEffect(() => {
+    if (!enabled || (lazy && tick === 0)) {
+      setState({ data: null, loading: false, error: null });
+      return;
+    }
+
     let cancelled = false;
 
     setState({ data: null, loading: true, error: null });
@@ -37,7 +50,7 @@ export function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [...deps, enabled, tick]);
 
-  return state;
+  return { ...state, refetch };
 }
