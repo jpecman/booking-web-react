@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { api, ApiError } from "@/api/client";
 
 interface User {
@@ -8,6 +8,7 @@ interface User {
 
 interface AuthContextValue {
   user: User | null;
+  initialising: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -22,6 +23,14 @@ interface LoginResponse {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [initialising, setInitialising] = useState(true);
+
+  useEffect(() => {
+    api.get<User>("/v1/auth/me")
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setInitialising(false));
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await api.put<LoginResponse>("/v1/auth/login", { email, password });
@@ -37,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, initialising, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

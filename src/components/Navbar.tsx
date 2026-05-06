@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import LoginModal from "@/components/LoginModal";
 
 const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Bookings", href: "#" },
-  { label: "About", href: "#" },
+  { label: "Home", to: "/" },
+  { label: "Bookings", to: "/bookings" },
+  { label: "Contacts", to: "/contacts" },
 ];
 
 export default function Navbar() {
@@ -24,12 +25,14 @@ export default function Navbar() {
             <ul className="hidden md:flex gap-6">
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `font-medium transition-colors ${isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"}`
+                    }
                   >
                     {link.label}
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>
@@ -81,13 +84,15 @@ export default function Navbar() {
             <ul>
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="block py-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `block py-2 font-medium transition-colors ${isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"}`
+                    }
                     onClick={() => setMenuOpen(false)}
                   >
                     {link.label}
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>
