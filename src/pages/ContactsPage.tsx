@@ -1,27 +1,13 @@
 import { useState } from "react";
-import { api } from "@/api/client";
-import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/context/AuthContext";
+import { useContacts, type Contact } from "@/context/ContactsContext";
 import EditContactModal from "@/components/EditContactModal";
 import DeleteContactModal from "@/components/DeleteContactModal";
 import CreateContactModal from "@/components/CreateContactModal";
 
-interface Contact {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  show: boolean;
-}
-
 export default function ContactsPage() {
   const { user } = useAuth();
-  const { data, loading, error, refetch } = useFetch<Contact[]>(
-    () => api.get("/v1/contact"),
-    [],
-    { enabled: !!user, lazy: true }
-  );
+  const { contacts: data, loading, error, refetch } = useContacts();
 
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Contact | null>(null);
