@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import OverviewPage from "@/pages/OverviewPage";
 import BookingsPage from "@/pages/BookingsPage";
 import ContactsPage from "@/pages/ContactsPage";
+import FieldsPage from "@/pages/FieldsPage";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Route path="/" element={<OverviewPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/fields" element={<FieldsPage />} />
         </Routes>
       </main>
     </div>
