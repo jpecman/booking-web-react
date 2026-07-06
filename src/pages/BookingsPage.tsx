@@ -6,9 +6,11 @@ import CreateBookingModal from "@/components/CreateBookingModal";
 
 interface Slot {
   id: string;
+  name: string | null;
   from: string;
   to: string;
   price: number;
+  pitchId: string;
 }
 
 interface Booking {

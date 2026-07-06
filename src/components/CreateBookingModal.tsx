@@ -21,6 +21,8 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     isWholeField: true,
     contactId: "",
     fieldId: "",
+    recurring: false,
+    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().slice(0, 10),
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +39,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.post("/v1/Booking/simple", {
+      await api.post("/v1/Booking", {
         name: form.name,
         from: new Date(`${form.fromDate}T${form.fromTime}`).toISOString(),
         duration: Number(form.duration),
@@ -45,6 +47,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
         isWholeField: form.isWholeField,
         contactId: form.contactId,
         fieldId: form.fieldId,
+        endDate: form.recurring ? new Date(form.endDate).toISOString() : undefined,
       });
       onCreated();
       onClose();
@@ -167,6 +170,29 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
             />
             Whole field
           </label>
+
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.recurring}
+              onChange={(e) => set("recurring", e.target.checked)}
+              className="w-4 h-4 accent-indigo-600"
+            />
+            Repeat weekly
+          </label>
+
+          {form.recurring && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Repeat until</label>
+              <input
+                type="date"
+                required
+                value={form.endDate}
+                onChange={(e) => set("endDate", e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          )}
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
 
