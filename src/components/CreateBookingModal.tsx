@@ -16,9 +16,9 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     name: "",
     fromDate: new Date().toISOString().slice(0, 10),
     fromTime: "09:00",
-    duration: "",
+    duration: "90",
     price: "1000",
-    isWholeField: false,
+    isWholeField: true,
     contactId: "",
     fieldId: "",
   });
