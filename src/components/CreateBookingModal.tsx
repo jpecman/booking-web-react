@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/api/client";
 import { useContacts } from "@/context/ContactsContext";
 import { useFields } from "@/context/FieldsContext";
@@ -27,6 +27,10 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
+
+  useEffect(() => {
+    if (fields?.length === 1) setForm((f) => ({ ...f, fieldId: fields[0].id }));
+  }, [fields]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
