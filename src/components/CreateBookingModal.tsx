@@ -14,8 +14,8 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
 
   const [form, setForm] = useState({
     name: "",
-    fromDate: "",
-    fromTime: "",
+    fromDate: new Date().toISOString().slice(0, 10),
+    fromTime: "09:00",
     duration: "",
     price: "1000",
     isWholeField: false,
@@ -34,7 +34,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     setLoading(true);
     try {
       await api.post("/v1/Booking/simple", {
-        name: form.name || undefined,
+        name: form.name,
         from: new Date(`${form.fromDate}T${form.fromTime}`).toISOString(),
         duration: Number(form.duration),
         price: Number(form.price),
@@ -61,9 +61,10 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Name (optional)</label>
+            <label className="text-sm font-medium text-gray-700">Name</label>
             <input
               type="text"
+              required
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
               className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
