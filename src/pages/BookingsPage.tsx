@@ -3,6 +3,7 @@ import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/context/AuthContext";
 import CreateBookingModal from "@/components/CreateBookingModal";
+import CancelBookingModal from "@/components/CancelBookingModal";
 
 interface Slot {
   id: string;
@@ -33,6 +34,7 @@ export default function BookingsPage() {
   );
 
   const [creating, setCreating] = useState(false);
+  const [cancelling, setCancelling] = useState<Booking | null>(null);
 
   const formatSlotTime = (from: string, to: string) => {
     const f = new Date(from);
@@ -75,6 +77,7 @@ export default function BookingsPage() {
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Contact</th>
                 <th className="px-4 py-3">Slots</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -99,6 +102,14 @@ export default function BookingsPage() {
                       <span className="text-gray-400">—</span>
                     )}
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => setCancelling(booking)}
+                      className="text-xs font-medium text-red-600 border border-red-300 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -110,6 +121,14 @@ export default function BookingsPage() {
         <CreateBookingModal
           onClose={() => setCreating(false)}
           onCreated={refetch}
+        />
+      )}
+
+      {cancelling && (
+        <CancelBookingModal
+          booking={cancelling}
+          onClose={() => setCancelling(null)}
+          onCancelled={refetch}
         />
       )}
     </>
