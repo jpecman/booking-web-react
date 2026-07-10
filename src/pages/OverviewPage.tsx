@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { api } from "@/api/client";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
@@ -8,6 +8,8 @@ interface Slot {
   id: string;
   from: string;
   to: string;
+  pitchId: string;
+  name: string | null;
 }
 
 interface Booking {
@@ -20,6 +22,14 @@ interface Booking {
   } | null;
   slots: Slot[] | null;
 }
+
+type BookingEvent = {
+  rowspan: number;
+  slotNames: string[];
+  fromLabel: string;
+  toLabel: string;
+  isBothPitches: boolean;
+};
 
 const TIME_SLOTS = Array.from({ length: 28 }, (_, i) => 480 + i * 30); // 8:00–21:30
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -38,6 +48,10 @@ function formatWeekRange(mon: Date): string {
   sun.setDate(mon.getDate() + 6);
   const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   return `${fmt(mon)} – ${fmt(sun)} ${sun.getFullYear()}`;
+}
+
+function formatTime(d: Date): string {
+  return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
 }
 
 export default function OverviewPage() {
@@ -91,22 +105,70 @@ export default function OverviewPage() {
     return data.flatMap(booking =>
       (booking.slots ?? []).map(slot => ({
         id: slot.id,
+        pitchId: slot.pitchId,
+        name: slot.name,
         from: new Date(slot.from),
         to: new Date(slot.to),
-        label: (booking.name ??
-          `${booking.contact?.firstName ?? ""} ${booking.contact?.lastName ?? ""}`.trim()) || "—",
       }))
     );
   }, [data]);
 
-  const getCellInfo = useCallback((day: Date, startMins: number) => {
-    const cellStart = new Date(day);
-    cellStart.setHours(Math.floor(startMins / 60), startMins % 60, 0, 0);
-    const slot = flatSlots.find(s => cellStart >= s.from && cellStart < s.to);
-    if (!slot) return null;
-    const prevStart = new Date(cellStart.getTime() - 30 * 60 * 1000);
-    return { ...slot, isFirst: prevStart < slot.from };
-  }, [flatSlots]);
+  const { dayEvents, skipSets } = useMemo(() => {
+    const dayEvents = weekDays.map(day => {
+      const events = new Map<number, BookingEvent>();
+
+      const daySlots = flatSlots.filter(s => s.from.toDateString() === day.toDateString());
+
+      const groups = new Map<string, typeof daySlots>();
+      for (const slot of daySlots) {
+        const key = `${slot.from.getTime()}-${slot.to.getTime()}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(slot);
+      }
+
+      for (const [, slots] of groups) {
+        const from = slots[0].from;
+        const to = slots[0].to;
+        const startMins = from.getHours() * 60 + from.getMinutes();
+        const endMins = to.getHours() * 60 + to.getMinutes();
+
+        const rowIndex = TIME_SLOTS.findIndex(t => t >= startMins);
+        if (rowIndex === -1) continue;
+
+        const endRowIndex = TIME_SLOTS.findIndex(t => t >= endMins);
+        const actualEnd = endRowIndex === -1 ? TIME_SLOTS.length : endRowIndex;
+        const rowspan = Math.max(1, actualEnd - rowIndex);
+
+        const isWholeField = slots.length === 2 &&
+          slots[0].pitchId !== slots[1].pitchId &&
+          !!slots[0].name &&
+          slots[0].name === slots[1].name;
+
+        const slotNames = isWholeField
+          ? [slots[0].name as string]
+          : slots.map(s => s.name ?? "").filter(Boolean);
+
+        events.set(rowIndex, {
+          rowspan,
+          slotNames,
+          fromLabel: formatTime(from),
+          toLabel: formatTime(to),
+          isBothPitches: slots.length >= 2,
+        });
+      }
+      return events;
+    });
+
+    const skipSets = dayEvents.map(events => {
+      const skip = new Set<number>();
+      for (const [rowIndex, event] of events) {
+        for (let i = 1; i < event.rowspan; i++) skip.add(rowIndex + i);
+      }
+      return skip;
+    });
+
+    return { dayEvents, skipSets };
+  }, [flatSlots, weekDays]);
 
   const todayStr = new Date().toDateString();
 
@@ -181,7 +243,7 @@ export default function OverviewPage() {
             </tr>
           </thead>
           <tbody>
-            {TIME_SLOTS.map((mins) => {
+            {TIME_SLOTS.map((mins, rowIndex) => {
               const isHour = mins % 60 === 0;
               return (
                 <tr key={mins} className={isHour ? "border-t border-gray-200" : "border-t border-dashed border-gray-100"}>
@@ -189,20 +251,34 @@ export default function OverviewPage() {
                     {isHour ? `${Math.floor(mins / 60)}:00` : ""}
                   </td>
                   {weekDays.map((day, di) => {
-                    const cell = getCellInfo(day, mins);
+                    if (skipSets[di].has(rowIndex)) return null;
+
+                    const event = dayEvents[di].get(rowIndex);
                     const isToday = day.toDateString() === todayStr;
+
+                    if (!event) {
+                      return (
+                        <td key={di} className={`h-6 border-r border-gray-100 last:border-r-0 ${isToday ? "bg-indigo-50/40" : ""}`} />
+                      );
+                    }
+
                     return (
                       <td
                         key={di}
-                        className={`h-6 px-1 border-r border-gray-100 last:border-r-0 align-top overflow-hidden ${
-                          cell ? "bg-indigo-100" : isToday ? "bg-indigo-50/40" : ""
+                        rowSpan={event.rowspan}
+                        className={`px-2 py-1 border-r border-gray-100 last:border-r-0 align-top text-green-800 ${
+                          event.isBothPitches ? "bg-green-100" : ""
                         }`}
+                        style={event.isBothPitches ? undefined : {
+                          background: "linear-gradient(to right, #dcfce7 50%, transparent 50%)"
+                        }}
                       >
-                        {cell?.isFirst && (
-                          <span className="text-xs font-medium text-indigo-800 truncate block leading-tight">
-                            {cell.label}
-                          </span>
-                        )}
+                        <div className="text-xs font-semibold leading-tight truncate">
+                          {event.slotNames.join(" – ")}
+                        </div>
+                        <div className="text-xs text-green-600 leading-tight">
+                          {event.fromLabel} – {event.toLabel}
+                        </div>
                       </td>
                     );
                   })}
