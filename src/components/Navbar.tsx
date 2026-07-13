@@ -5,6 +5,7 @@ import LoginModal from "@/components/LoginModal";
 
 const navLinks = [
   { label: "Home", to: "/" },
+  { label: "Calendar", to: "/calendar" },
   { label: "Bookings", to: "/bookings" },
   { label: "Contacts", to: "/contacts" },
   { label: "Fields", to: "/fields" },
