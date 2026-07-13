@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/context/AuthContext";
@@ -27,14 +28,39 @@ interface Booking {
 
 export default function BookingsPage() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const contactId = searchParams.get("contactId");
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+  const hasContext = !!contactId && !!from && !!to;
+
   const { data, loading, error, refetch } = useFetch<Booking[]>(
-    () => api.get("/v1/Booking?From=2026-01-01T00:00:00.000Z&To=2026-12-31T23:59:59.999Z"),
-    [],
-    { enabled: !!user }
+    () =>
+      api.get(
+        `/v1/Booking?From=${encodeURIComponent(from!)}&To=${encodeURIComponent(to!)}&ContactId=${encodeURIComponent(contactId!)}`
+      ),
+    [contactId, from, to],
+    { enabled: !!user && hasContext }
   );
 
   const [creating, setCreating] = useState(false);
   const [cancelling, setCancelling] = useState<Booking | null>(null);
+
+  if (!hasContext) {
+    return (
+      <div className="text-gray-500">
+        No contact selected — go to{" "}
+        <Link to="/" className="text-fkb-mid hover:underline">
+          Overview
+        </Link>{" "}
+        and click a contact name.
+      </div>
+    );
+  }
+
+  const contactName = data?.[0]?.contact
+    ? `${data[0].contact.firstName ?? ""} ${data[0].contact.lastName ?? ""}`.trim()
+    : null;
 
   const formatSlotTime = (from: string, to: string) => {
     const f = new Date(from);
@@ -44,8 +70,14 @@ export default function BookingsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Bookings</h1>
+      <Link to="/" className="text-sm text-fkb-mid hover:underline">
+        ← Back to Overview
+      </Link>
+
+      <div className="flex items-center justify-between mt-2 mb-6">
+        <h1 className="text-2xl font-bold">
+          Bookings{contactName ? ` — ${contactName}` : ""}
+        </h1>
         <div className="flex gap-2">
           <button
             onClick={() => setCreating(true)}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "@/api/client";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
@@ -177,9 +178,19 @@ export default function OverviewPage() {
               {data.map((summary) => (
                 <tr key={summary.contact.id} className="hover:bg-fkb-bg transition-colors">
                   <td className="px-4 py-3 font-medium text-gray-900">
-                    {`${summary.contact.firstName ?? ""} ${summary.contact.lastName ?? ""}`.trim() || (
-                      <span className="text-gray-400">—</span>
-                    )}
+                    {(() => {
+                      const name = `${summary.contact.firstName ?? ""} ${summary.contact.lastName ?? ""}`.trim();
+                      return name ? (
+                        <Link
+                          to={`/bookings?contactId=${encodeURIComponent(summary.contact.id)}&from=${encodeURIComponent(fromIso)}&to=${encodeURIComponent(toIso)}`}
+                          className="text-fkb-mid hover:underline"
+                        >
+                          {name}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-3 text-gray-600">{summary.bookingCount}</td>
                   <td className="px-4 py-3 text-gray-600">{summary.totalPrice.toLocaleString("cs-CZ")} Kč</td>
