@@ -72,7 +72,7 @@ export default function CancelBookingModal({ booking, onClose, onCancelled }: Pr
             type="button"
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-red-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
+            className="bg-fkb-danger text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
           >
             {loading ? "Cancelling…" : "Cancel booking"}
           </button>

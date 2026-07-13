@@ -20,7 +20,7 @@ export default function Navbar() {
       <nav className="bg-white shadow">
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex h-16 items-center justify-between">
-            <span className="text-xl font-bold text-indigo-600">BookingApp</span>
+            <span className="text-xl font-bold text-fkb-dark">BookingApp</span>
 
             {/* Desktop links */}
             <ul className="hidden md:flex gap-6">
@@ -29,7 +29,7 @@ export default function Navbar() {
                   <NavLink
                     to={link.to}
                     className={({ isActive }) =>
-                      `font-medium transition-colors ${isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"}`
+                      `font-medium transition-colors ${isActive ? "text-fkb-mid" : "text-gray-600 hover:text-fkb-mid"}`
                     }
                   >
                     {link.label}
@@ -45,7 +45,7 @@ export default function Navbar() {
                   <span className="text-sm text-gray-600">{user.name}</span>
                   <button
                     onClick={logout}
-                    className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+                    className="text-sm font-medium text-gray-600 hover:text-fkb-mid transition-colors"
                   >
                     Sign out
                   </button>
@@ -53,7 +53,7 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => setShowLogin(true)}
-                  className="bg-indigo-600 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="bg-fkb-mid text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-fkb-hover transition-colors"
                 >
                   Sign in
                 </button>
@@ -88,7 +88,7 @@ export default function Navbar() {
                   <NavLink
                     to={link.to}
                     className={({ isActive }) =>
-                      `block py-2 font-medium transition-colors ${isActive ? "text-indigo-600" : "text-gray-600 hover:text-indigo-600"}`
+                      `block py-2 font-medium transition-colors ${isActive ? "text-fkb-mid" : "text-gray-600 hover:text-fkb-mid"}`
                     }
                     onClick={() => setMenuOpen(false)}
                   >
@@ -103,7 +103,7 @@ export default function Navbar() {
                   <span className="text-sm text-gray-600">{user.name}</span>
                   <button
                     onClick={logout}
-                    className="text-sm font-medium text-gray-600 hover:text-indigo-600"
+                    className="text-sm font-medium text-gray-600 hover:text-fkb-mid"
                   >
                     Sign out
                   </button>
@@ -111,7 +111,7 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => { setShowLogin(true); setMenuOpen(false); }}
-                  className="w-full bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="w-full bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover transition-colors"
                 >
                   Sign in
                 </button>

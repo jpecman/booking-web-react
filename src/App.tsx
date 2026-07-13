@@ -7,7 +7,7 @@ import FieldsPage from "@/pages/FieldsPage";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-fkb-bg">
       <Navbar />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Routes>

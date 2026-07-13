@@ -64,7 +64,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
               required
               value={form.firstName}
               onChange={(e) => set("firstName", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -75,7 +75,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
               required
               value={form.lastName}
               onChange={(e) => set("lastName", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -86,7 +86,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
               required
               value={form.email}
               onChange={(e) => set("email", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -96,7 +96,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
               type="text"
               value={form.phone}
               onChange={(e) => set("phone", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -105,7 +105,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
               type="checkbox"
               checked={form.show}
               onChange={(e) => set("show", e.target.checked)}
-              className="w-4 h-4 accent-indigo-600"
+              className="w-4 h-4 accent-fkb-mid"
             />
             Show
           </label>
@@ -123,7 +123,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="bg-indigo-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="bg-fkb-mid text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-fkb-hover disabled:opacity-50 transition-colors"
             >
               {loading ? "Saving…" : "Save"}
             </button>

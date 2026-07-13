@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@theme {
+  --color-fkb-dark: #1b4332;
+  --color-fkb-mid: #2d6a4f;
+  --color-fkb-hover: #40916c;
+  --color-fkb-pale: #d8f3dc;
+  --color-fkb-bg: #f0f4f0;
+  --color-fkb-muted: #6c757d;
+  --color-fkb-border: #dee2e6;
+  --color-fkb-danger: #dc3545;
+  --color-fkb-highlight: #9ee29e;
+  --color-fkb-highlight-border: #7bc17b;
+  --color-fkb-heading: #2c3e50;
+}

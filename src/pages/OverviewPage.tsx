@@ -178,7 +178,7 @@ export default function OverviewPage() {
         <h1 className="text-2xl font-bold">Overview</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover transition-colors"
         >
           Create booking
         </button>
@@ -187,7 +187,7 @@ export default function OverviewPage() {
       <div className="flex items-center gap-2 mb-4">
         <button
           onClick={goToPrevWeek}
-          className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors"
+          className="p-2 rounded-lg border border-fkb-border hover:bg-fkb-bg text-gray-600 transition-colors"
           aria-label="Previous week"
         >
           &#8249;
@@ -196,18 +196,18 @@ export default function OverviewPage() {
         <div className="relative" ref={pickerRef}>
           <button
             onClick={() => setShowDatePicker(p => !p)}
-            className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors min-w-48 text-center"
+            className="px-4 py-2 rounded-lg border border-fkb-border hover:bg-fkb-bg text-sm font-medium text-gray-700 transition-colors min-w-48 text-center"
           >
             {formatWeekRange(monday)}
           </button>
           {showDatePicker && (
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-fkb-border rounded-lg shadow-lg p-3 z-10">
               <input
                 type="date"
                 autoFocus
                 defaultValue={monday.toISOString().slice(0, 10)}
                 onChange={handleDateSelect}
-                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
               />
             </div>
           )}
@@ -215,25 +215,25 @@ export default function OverviewPage() {
 
         <button
           onClick={goToNextWeek}
-          className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors"
+          className="p-2 rounded-lg border border-fkb-border hover:bg-fkb-bg text-gray-600 transition-colors"
           aria-label="Next week"
         >
           &#8250;
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="overflow-x-auto rounded-lg border border-fkb-border">
         <table className="min-w-full text-sm border-collapse">
           <thead>
             <tr>
-              <th className="w-14 border-b border-r border-gray-200 bg-gray-50" />
+              <th className="w-14 border-b border-r border-fkb-border bg-fkb-bg" />
               {weekDays.map((d, i) => (
                 <th
                   key={i}
-                  className={`px-2 py-2 text-xs font-semibold text-center border-b border-r border-gray-200 last:border-r-0 ${
+                  className={`px-2 py-2 text-xs font-semibold text-center border-b border-r border-fkb-border last:border-r-0 ${
                     d.toDateString() === todayStr
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "bg-gray-50 text-gray-500"
+                      ? "bg-fkb-pale text-fkb-dark"
+                      : "bg-fkb-bg text-gray-500"
                   }`}
                 >
                   <div>{DAY_LABELS[i]}</div>
@@ -246,8 +246,8 @@ export default function OverviewPage() {
             {TIME_SLOTS.map((mins, rowIndex) => {
               const isHour = mins % 60 === 0;
               return (
-                <tr key={mins} className={isHour ? "border-t border-gray-200" : "border-t border-dashed border-gray-100"}>
-                  <td className="w-14 pr-2 text-right text-xs text-gray-400 border-r border-gray-200 align-top py-0.5">
+                <tr key={mins} className={isHour ? "border-t border-fkb-border" : "border-t border-dashed border-fkb-border/50"}>
+                  <td className="w-14 pr-2 text-right text-xs text-gray-400 border-r border-fkb-border align-top py-0.5">
                     {isHour ? `${Math.floor(mins / 60)}:00` : ""}
                   </td>
                   {weekDays.map((day, di) => {
@@ -258,7 +258,7 @@ export default function OverviewPage() {
 
                     if (!event) {
                       return (
-                        <td key={di} className={`h-6 border-r border-gray-100 last:border-r-0 ${isToday ? "bg-indigo-50/40" : ""}`} />
+                        <td key={di} className={`h-6 border-r border-fkb-border/50 last:border-r-0 ${isToday ? "bg-fkb-pale/40" : ""}`} />
                       );
                     }
 
@@ -266,17 +266,17 @@ export default function OverviewPage() {
                       <td
                         key={di}
                         rowSpan={event.rowspan}
-                        className={`px-2 py-1 border-r border-gray-100 last:border-r-0 align-top text-green-800 ${
-                          event.isBothPitches ? "bg-green-100" : ""
+                        className={`px-2 py-1 border-r border-fkb-border/50 last:border-r-0 align-top text-fkb-dark ${
+                          event.isBothPitches ? "bg-fkb-pale" : ""
                         }`}
                         style={event.isBothPitches ? undefined : {
-                          background: "linear-gradient(to right, #dcfce7 50%, transparent 50%)"
+                          background: "linear-gradient(to right, var(--color-fkb-pale) 50%, transparent 50%)"
                         }}
                       >
                         <div className="text-xs font-semibold leading-tight truncate">
                           {event.slotNames.join(" – ")}
                         </div>
-                        <div className="text-xs text-green-600 leading-tight">
+                        <div className="text-xs text-fkb-mid leading-tight">
                           {event.fromLabel} – {event.toLabel}
                         </div>
                       </td>

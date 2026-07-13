@@ -20,14 +20,14 @@ export default function FieldsPage() {
         <button
           onClick={() => setCreating(true)}
           disabled={!user}
-          className="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           New field
         </button>
         <button
           onClick={refetch}
           disabled={!user || loading}
-          className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           {loading ? "Loading…" : "Reload"}
         </button>
@@ -39,24 +39,24 @@ export default function FieldsPage() {
       {fields && fields.length === 0 && <p className="text-gray-500">No fields found.</p>}
 
       {fields && fields.length > 0 && (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
-            <thead className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="overflow-x-auto rounded-lg border border-fkb-border">
+          <table className="min-w-full divide-y divide-fkb-border bg-white text-sm">
+            <thead className="bg-fkb-bg text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Pitches</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-fkb-border/50">
               {fields.map((field) => (
-                <tr key={field.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={field.id} className="hover:bg-fkb-bg transition-colors">
                   <td className="px-4 py-3 font-medium text-gray-900">{field.name}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
                       {field.pitches && field.pitches.length > 0 ? (
                         field.pitches.map((pitch) => (
-                          <span key={pitch.id} className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span key={pitch.id} className="bg-fkb-pale text-fkb-dark text-xs font-medium px-2 py-0.5 rounded-full">
                             {pitch.name}
                           </span>
                         ))
@@ -69,13 +69,13 @@ export default function FieldsPage() {
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => setEditing(field)}
-                        className="text-xs font-medium text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded hover:bg-indigo-50 transition-colors"
+                        className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => setDeleting(field)}
-                        className="text-xs font-medium text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                        className="text-xs font-medium text-fkb-danger hover:text-fkb-danger px-2 py-1 rounded hover:bg-red-50 transition-colors"
                       >
                         Delete
                       </button>

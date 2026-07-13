@@ -50,14 +50,14 @@ export default function BookingsPage() {
           <button
             onClick={() => setCreating(true)}
             disabled={!user}
-            className="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+            className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
           >
             New booking
           </button>
           <button
             onClick={refetch}
             disabled={!user || loading}
-            className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
           >
             {loading ? "Loading…" : "Reload"}
           </button>
@@ -70,9 +70,9 @@ export default function BookingsPage() {
       {data && data.length === 0 && <p className="text-gray-500">No bookings found.</p>}
 
       {data && data.length > 0 && (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
-            <thead className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="overflow-x-auto rounded-lg border border-fkb-border">
+          <table className="min-w-full divide-y divide-fkb-border bg-white text-sm">
+            <thead className="bg-fkb-bg text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Contact</th>
@@ -80,9 +80,9 @@ export default function BookingsPage() {
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-fkb-border/50">
               {data.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={booking.id} className="hover:bg-fkb-bg transition-colors">
                   <td className="px-4 py-3 font-medium text-gray-900">
                     {booking.name ?? <span className="text-gray-400">—</span>}
                   </td>
@@ -105,7 +105,7 @@ export default function BookingsPage() {
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => setCancelling(booking)}
-                      className="text-xs font-medium text-red-600 border border-red-300 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+                      className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
                     >
                       Cancel
                     </button>

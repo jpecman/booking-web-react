@@ -53,7 +53,7 @@ export default function DeleteFieldModal({ field, onClose, onDeleted }: Props) {
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="bg-red-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
+            className="bg-fkb-danger text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
           >
             {loading ? "Deleting…" : "Delete"}
           </button>

@@ -62,7 +62,7 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -75,7 +75,7 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
                 onChange={(e) => setPitchInput(e.target.value)}
                 onKeyDown={handlePitchKeyDown}
                 placeholder="Pitch name"
-                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
               />
               <button
                 type="button"
@@ -88,9 +88,9 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
             {pitches.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1">
                 {pitches.map((p) => (
-                  <span key={p} className="flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                  <span key={p} className="flex items-center gap-1 bg-fkb-pale text-fkb-dark text-xs font-medium px-2 py-0.5 rounded-full">
                     {p}
-                    <button type="button" onClick={() => removePitch(p)} className="hover:text-indigo-900">✕</button>
+                    <button type="button" onClick={() => removePitch(p)} className="hover:text-fkb-dark">✕</button>
                   </span>
                 ))}
               </div>
@@ -110,7 +110,7 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="bg-indigo-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="bg-fkb-mid text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-fkb-hover disabled:opacity-50 transition-colors"
             >
               {loading ? "Creating…" : "Create"}
             </button>

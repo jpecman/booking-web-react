@@ -122,7 +122,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -138,14 +138,14 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); confirmRename(pitch.id); } }}
-                      className="flex-1 border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="flex-1 border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
                       autoFocus
                     />
                     <button
                       type="button"
                       onClick={() => confirmRename(pitch.id)}
                       disabled={renamingId === pitch.id}
-                      className="text-xs font-medium text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded hover:bg-indigo-50 transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors disabled:opacity-50"
                     >
                       {renamingId === pitch.id ? "…" : "Save"}
                     </button>
@@ -164,7 +164,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       type="button"
                       onClick={() => startEdit(pitch)}
                       disabled={pitchBusy}
-                      className="text-xs font-medium text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded hover:bg-indigo-50 transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors disabled:opacity-50"
                     >
                       Rename
                     </button>
@@ -172,7 +172,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       type="button"
                       onClick={() => deletePitch(pitch.id)}
                       disabled={deletingId === pitch.id || pitchBusy}
-                      className="text-xs font-medium text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-danger hover:text-fkb-danger px-2 py-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50"
                     >
                       {deletingId === pitch.id ? "…" : "Delete"}
                     </button>
@@ -189,7 +189,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                 onKeyDown={handleNewPitchKeyDown}
                 placeholder="New pitch name"
                 disabled={addingPitch}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid disabled:opacity-50"
               />
               <button
                 type="button"
@@ -216,7 +216,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
             <button
               type="submit"
               disabled={savingName}
-              className="bg-indigo-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="bg-fkb-mid text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-fkb-hover disabled:opacity-50 transition-colors"
             >
               {savingName ? "Saving…" : "Save"}
             </button>

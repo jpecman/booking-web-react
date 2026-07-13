@@ -42,7 +42,7 @@ export default function LoginModal({ onClose }: Props) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -53,7 +53,7 @@ export default function LoginModal({ onClose }: Props) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -62,7 +62,7 @@ export default function LoginModal({ onClose }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            className="bg-fkb-mid text-white rounded-lg py-2 text-sm font-medium hover:bg-fkb-hover disabled:opacity-50 transition-colors"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>

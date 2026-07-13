@@ -74,7 +74,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               required
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -84,7 +84,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               required
               value={form.contactId}
               onChange={(e) => set("contactId", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             >
               <option value="">Select contact…</option>
               {contacts?.map((c) => (
@@ -101,7 +101,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               required
               value={form.fieldId}
               onChange={(e) => set("fieldId", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             >
               <option value="">Select field…</option>
               {fields?.map((f) => (
@@ -120,14 +120,14 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
                 required
                 value={form.fromDate}
                 onChange={(e) => set("fromDate", e.target.value)}
-                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
               />
               <input
                 type="time"
                 required
                 value={form.fromTime}
                 onChange={(e) => set("fromTime", e.target.value)}
-                className="w-28 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-28 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               required
               value={form.duration}
               onChange={(e) => set("duration", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             >
               <option value="">Select…</option>
               <option value="30">30 min</option>
@@ -157,7 +157,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               step="0.01"
               value={form.price}
               onChange={(e) => set("price", e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
             />
           </div>
 
@@ -166,7 +166,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               type="checkbox"
               checked={form.isWholeField}
               onChange={(e) => set("isWholeField", e.target.checked)}
-              className="w-4 h-4 accent-indigo-600"
+              className="w-4 h-4 accent-fkb-mid"
             />
             Whole field
           </label>
@@ -176,7 +176,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
               type="checkbox"
               checked={form.recurring}
               onChange={(e) => set("recurring", e.target.checked)}
-              className="w-4 h-4 accent-indigo-600"
+              className="w-4 h-4 accent-fkb-mid"
             />
             Repeat weekly
           </label>
@@ -189,7 +189,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
                 required
                 value={form.endDate}
                 onChange={(e) => set("endDate", e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
               />
             </div>
           )}
@@ -207,7 +207,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="bg-indigo-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="bg-fkb-mid text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-fkb-hover disabled:opacity-50 transition-colors"
             >
               {loading ? "Creating…" : "Create"}
             </button>
