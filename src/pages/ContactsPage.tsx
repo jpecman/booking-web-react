@@ -67,13 +67,13 @@ export default function ContactsPage() {
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => setEditing(contact)}
-                        className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors"
+                        className="text-xs font-medium text-fkb-dark border border-fkb-dark/40 rounded-lg px-3 py-1.5 hover:bg-fkb-pale transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => setDeleting(contact)}
-                        className="text-xs font-medium text-fkb-danger hover:text-fkb-danger px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                        className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
                       >
                         Delete
                       </button>

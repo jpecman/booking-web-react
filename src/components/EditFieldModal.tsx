@@ -145,7 +145,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       type="button"
                       onClick={() => confirmRename(pitch.id)}
                       disabled={renamingId === pitch.id}
-                      className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-dark border border-fkb-dark/40 rounded-lg px-3 py-1.5 hover:bg-fkb-pale transition-colors disabled:opacity-50"
                     >
                       {renamingId === pitch.id ? "…" : "Save"}
                     </button>
@@ -164,7 +164,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       type="button"
                       onClick={() => startEdit(pitch)}
                       disabled={pitchBusy}
-                      className="text-xs font-medium text-fkb-dark hover:text-fkb-dark px-2 py-1 rounded hover:bg-fkb-pale transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-dark border border-fkb-dark/40 rounded-lg px-3 py-1.5 hover:bg-fkb-pale transition-colors disabled:opacity-50"
                     >
                       Rename
                     </button>
@@ -172,7 +172,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
                       type="button"
                       onClick={() => deletePitch(pitch.id)}
                       disabled={deletingId === pitch.id || pitchBusy}
-                      className="text-xs font-medium text-fkb-danger hover:text-fkb-danger px-2 py-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50"
+                      className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors disabled:opacity-50"
                     >
                       {deletingId === pitch.id ? "…" : "Delete"}
                     </button>
