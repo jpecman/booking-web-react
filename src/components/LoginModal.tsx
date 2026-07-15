@@ -7,8 +7,12 @@ interface Props {
 
 export default function LoginModal({ onClose }: Props) {
   const { login } = useAuth();
-  const [email, setEmail] = useState("you@example.com");
-  const [password, setPassword] = useState("[REDACTED]");
+  const [email, setEmail] = useState(
+    import.meta.env.DEV ? import.meta.env.VITE_DEV_LOGIN_EMAIL ?? "" : ""
+  );
+  const [password, setPassword] = useState(
+    import.meta.env.DEV ? import.meta.env.VITE_DEV_LOGIN_PASSWORD ?? "" : ""
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
