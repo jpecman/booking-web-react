@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { api, ApiError } from "@/api/client";
+import { api } from "@/api/client";
 
 interface User {
   email: string;

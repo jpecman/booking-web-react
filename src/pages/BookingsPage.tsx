@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
-import CreateBookingModal from "@/components/CreateBookingModal";
+import NewBookingButtons from "@/components/NewBookingButtons";
 import CancelBookingModal from "@/components/CancelBookingModal";
 
 interface Slot {
@@ -41,7 +41,6 @@ export default function BookingsPage() {
     { enabled: hasContext }
   );
 
-  const [creating, setCreating] = useState(false);
   const [cancelling, setCancelling] = useState<Booking | null>(null);
 
   if (!hasContext) {
@@ -76,21 +75,7 @@ export default function BookingsPage() {
         <h1 className="text-2xl font-bold">
           Bookings{contactName ? ` — ${contactName}` : ""}
         </h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCreating(true)}
-            className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
-          >
-            New booking
-          </button>
-          <button
-            onClick={refetch}
-            disabled={loading}
-            className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
-          >
-            {loading ? "Loading…" : "Reload"}
-          </button>
-        </div>
+        <NewBookingButtons onCreated={refetch} />
       </div>
 
       {loading && <p className="text-gray-500">Loading...</p>}
@@ -143,13 +128,6 @@ export default function BookingsPage() {
             </tbody>
           </table>
         </div>
-      )}
-
-      {creating && (
-        <CreateBookingModal
-          onClose={() => setCreating(false)}
-          onCreated={refetch}
-        />
       )}
 
       {cancelling && (

@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
-import CreateBookingModal from "@/components/CreateBookingModal";
+import NewBookingButtons from "@/components/NewBookingButtons";
 
 interface Slot {
   id: string;
@@ -54,7 +54,6 @@ function formatTime(d: Date): string {
 }
 
 export default function CalendarPage() {
-  const [showModal, setShowModal] = useState(false);
   const [monday, setMonday] = useState(getMonday);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -173,12 +172,7 @@ export default function CalendarPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Calendar</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover transition-colors"
-        >
-          Create booking
-        </button>
+        <NewBookingButtons onCreated={refetch} />
       </div>
 
       <div className="flex items-center gap-2 mb-4">
@@ -220,7 +214,13 @@ export default function CalendarPage() {
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-fkb-border">
-        <table className="min-w-full text-sm border-collapse">
+        <table className="min-w-full text-sm border-collapse table-fixed">
+          <colgroup>
+            <col style={{ width: "3.5rem" }} />
+            {weekDays.map((_, i) => (
+              <col key={i} style={{ width: "calc((100% - 3.5rem) / 7)" }} />
+            ))}
+          </colgroup>
           <thead>
             <tr>
               <th className="w-14 border-b border-r border-fkb-border bg-fkb-bg" />
@@ -286,12 +286,6 @@ export default function CalendarPage() {
         </table>
       </div>
 
-      {showModal && (
-        <CreateBookingModal
-          onClose={() => setShowModal(false)}
-          onCreated={refetch}
-        />
-      )}
     </>
   );
 }

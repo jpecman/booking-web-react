@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
+import NewBookingButtons from "@/components/NewBookingButtons";
 
 interface ContactBookingSummary {
   contact: {
@@ -95,13 +96,7 @@ export default function OverviewPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Home</h1>
-        <button
-          onClick={refetch}
-          disabled={loading}
-          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
-        >
-          {loading ? "Loading…" : "Reload"}
-        </button>
+        <NewBookingButtons onCreated={refetch} />
       </div>
 
       <div className="flex items-center gap-2 mb-4">

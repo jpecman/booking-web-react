@@ -13,20 +13,13 @@ export default function FieldsPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-2">Fields</h1>
       <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Fields</h1>
         <button
           onClick={() => setCreating(true)}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           New field
-        </button>
-        <button
-          onClick={refetch}
-          disabled={loading}
-          className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
-        >
-          {loading ? "Loading…" : "Reload"}
         </button>
       </div>
 
