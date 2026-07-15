@@ -34,13 +34,13 @@ const STATUS_STYLES: Record<number, string> = {
 };
 
 function getSeasonStart(date: Date): number {
-  const month = date.getMonth(); // 0-indexed, Oct = 9
-  return month >= 9 ? date.getFullYear() : date.getFullYear() - 1;
+  const month = date.getMonth(); // 0-indexed, Sep = 8
+  return month >= 8 ? date.getFullYear() : date.getFullYear() - 1;
 }
 
 function seasonBounds(startYear: number): { from: Date; to: Date } {
-  const from = new Date(startYear, 9, 1, 0, 0, 0, 0);
-  const to = new Date(startYear + 1, 5, 30, 23, 59, 59, 999);
+  const from = new Date(startYear, 8, 1, 0, 0, 0, 0);
+  const to = new Date(startYear + 1, 7, 31, 23, 59, 59, 999);
   return { from, to };
 }
 
