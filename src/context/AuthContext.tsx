@@ -10,7 +10,7 @@ interface AuthContextValue {
   user: User | null;
   initialising: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -40,9 +40,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser({ email: response.email, name: response.userName });
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    setUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await api.put("/v1/auth/logout", {});
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+    }
   }, []);
 
   return (

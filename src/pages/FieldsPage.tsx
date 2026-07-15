@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useFields, type Field } from "@/context/FieldsContext";
 import CreateFieldModal from "@/components/CreateFieldModal";
 import EditFieldModal from "@/components/EditFieldModal";
 import DeleteFieldModal from "@/components/DeleteFieldModal";
 
 export default function FieldsPage() {
-  const { user } = useAuth();
   const { fields, loading, error, refetch } = useFields();
 
   const [creating, setCreating] = useState(false);
@@ -19,21 +17,19 @@ export default function FieldsPage() {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => setCreating(true)}
-          disabled={!user}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           New field
         </button>
         <button
           onClick={refetch}
-          disabled={!user || loading}
+          disabled={loading}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           {loading ? "Loading…" : "Reload"}
         </button>
       </div>
 
-      {!user && <p className="text-gray-500">Sign in to view fields.</p>}
       {loading && <p className="text-gray-500">Loading...</p>}
       {error && <p className="text-red-600">Failed to load fields: {error.message}</p>}
       {fields && fields.length === 0 && <p className="text-gray-500">No fields found.</p>}

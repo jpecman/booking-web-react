@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/api/client";
-import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 
 interface ContactBookingSummary {
@@ -55,7 +54,6 @@ function toDateInputValue(d: Date): string {
 }
 
 export default function OverviewPage() {
-  const { user } = useAuth();
   const [{ from, to }, setRange] = useState(() => seasonBounds(getSeasonStart(new Date())));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -90,8 +88,7 @@ export default function OverviewPage() {
 
   const { data, loading, error, refetch } = useFetch<ContactBookingSummary[]>(
     () => api.get(`/v1/booking-summary?From=${fromIso}&To=${toIso}`),
-    [fromIso, toIso],
-    { enabled: !!user }
+    [fromIso, toIso]
   );
 
   return (
@@ -100,7 +97,7 @@ export default function OverviewPage() {
         <h1 className="text-2xl font-bold">Home</h1>
         <button
           onClick={refetch}
-          disabled={!user || loading}
+          disabled={loading}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           {loading ? "Loading…" : "Reload"}
@@ -156,7 +153,6 @@ export default function OverviewPage() {
         </button>
       </div>
 
-      {!user && <p className="text-gray-500">Sign in to view the overview.</p>}
       {loading && <p className="text-gray-500">Loading...</p>}
       {error && <p className="text-red-600">Failed to load overview: {error.message}</p>}
       {data && data.length === 0 && <p className="text-gray-500">No bookings found for this period.</p>}

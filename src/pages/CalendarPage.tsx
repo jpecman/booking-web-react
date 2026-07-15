@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { api } from "@/api/client";
-import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import CreateBookingModal from "@/components/CreateBookingModal";
 
@@ -55,7 +54,6 @@ function formatTime(d: Date): string {
 }
 
 export default function CalendarPage() {
-  const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [monday, setMonday] = useState(getMonday);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -96,8 +94,7 @@ export default function CalendarPage() {
 
   const { data, refetch } = useFetch<Booking[]>(
     () => api.get(`/v1/Booking?From=${monday.toISOString()}&To=${fetchTo}`),
-    [monday],
-    { enabled: !!user }
+    [monday]
   );
 
   const flatSlots = useMemo(() => {

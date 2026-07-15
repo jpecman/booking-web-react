@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useContacts, type Contact } from "@/context/ContactsContext";
 import EditContactModal from "@/components/EditContactModal";
 import DeleteContactModal from "@/components/DeleteContactModal";
 import CreateContactModal from "@/components/CreateContactModal";
 
 export default function ContactsPage() {
-  const { user } = useAuth();
   const { contacts: data, loading, error, refetch } = useContacts();
 
   const [creating, setCreating] = useState(false);
@@ -19,21 +17,19 @@ export default function ContactsPage() {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => setCreating(true)}
-          disabled={!user}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           New contact
         </button>
         <button
           onClick={refetch}
-          disabled={!user || loading}
+          disabled={loading}
           className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
         >
           {loading ? "Loading…" : "Reload"}
         </button>
       </div>
 
-      {!user && <p className="text-gray-500">Sign in to view contacts.</p>}
       {loading && <p className="text-gray-500">Loading...</p>}
       {error && <p className="text-red-600">Failed to load contacts: {error.message}</p>}
       {data && data.length === 0 && <p className="text-gray-500">No contacts found.</p>}

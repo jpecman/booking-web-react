@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
-import { useAuth } from "@/context/AuthContext";
 import CreateBookingModal from "@/components/CreateBookingModal";
 import CancelBookingModal from "@/components/CancelBookingModal";
 
@@ -27,7 +26,6 @@ interface Booking {
 }
 
 export default function BookingsPage() {
-  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const contactId = searchParams.get("contactId");
   const from = searchParams.get("from");
@@ -40,7 +38,7 @@ export default function BookingsPage() {
         `/v1/Booking?From=${encodeURIComponent(from!)}&To=${encodeURIComponent(to!)}&ContactId=${encodeURIComponent(contactId!)}`
       ),
     [contactId, from, to],
-    { enabled: !!user && hasContext }
+    { enabled: hasContext }
   );
 
   const [creating, setCreating] = useState(false);
@@ -81,14 +79,13 @@ export default function BookingsPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setCreating(true)}
-            disabled={!user}
             className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
           >
             New booking
           </button>
           <button
             onClick={refetch}
-            disabled={!user || loading}
+            disabled={loading}
             className="bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover disabled:opacity-50 transition-colors"
           >
             {loading ? "Loading…" : "Reload"}
@@ -96,7 +93,6 @@ export default function BookingsPage() {
         </div>
       </div>
 
-      {!user && <p className="text-gray-500">Sign in to view your bookings.</p>}
       {loading && <p className="text-gray-500">Loading...</p>}
       {error && <p className="text-red-600">Failed to load bookings: {error.message}</p>}
       {data && data.length === 0 && <p className="text-gray-500">No bookings found.</p>}

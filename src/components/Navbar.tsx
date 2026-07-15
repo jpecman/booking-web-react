@@ -13,7 +13,7 @@ const navLinks = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, initialising } = useAuth();
 
   return (
     <>
@@ -22,65 +22,71 @@ export default function Navbar() {
           <div className="flex h-16 items-center justify-between">
             <span className="text-xl font-bold text-fkb-dark">BookingApp</span>
 
-            {/* Desktop links */}
-            <ul className="hidden md:flex gap-6">
-              {navLinks.map((link) => (
-                <li key={link.label}>
-                  <NavLink
-                    to={link.to}
-                    className={({ isActive }) =>
-                      `font-medium transition-colors ${isActive ? "text-fkb-mid" : "text-gray-600 hover:text-fkb-mid"}`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
+            {!initialising && (
+              <>
+                {/* Desktop links */}
+                {user && (
+                  <ul className="hidden md:flex gap-6">
+                    {navLinks.map((link) => (
+                      <li key={link.label}>
+                        <NavLink
+                          to={link.to}
+                          className={({ isActive }) =>
+                            `font-medium transition-colors ${isActive ? "text-fkb-mid" : "text-gray-600 hover:text-fkb-mid"}`
+                          }
+                        >
+                          {link.label}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
-            {/* Auth — desktop */}
-            <div className="hidden md:flex items-center gap-3">
-              {user ? (
-                <>
-                  <span className="text-sm text-gray-600">{user.name}</span>
+                {/* Auth */}
+                {user ? (
+                  <div className="hidden md:flex items-center gap-3">
+                    <span className="text-sm text-gray-600">{user.name}</span>
+                    <button
+                      onClick={logout}
+                      className="text-sm font-medium text-gray-600 hover:text-fkb-mid transition-colors"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={logout}
-                    className="text-sm font-medium text-gray-600 hover:text-fkb-mid transition-colors"
+                    onClick={() => setShowLogin(true)}
+                    className="bg-fkb-mid text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-fkb-hover transition-colors"
                   >
-                    Sign out
+                    Sign in
                   </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setShowLogin(true)}
-                  className="bg-fkb-mid text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-fkb-hover transition-colors"
-                >
-                  Sign in
-                </button>
-              )}
-            </div>
+                )}
 
-            {/* Hamburger button */}
-            <button
-              className="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
+                {/* Hamburger button */}
+                {user && (
+                  <button
+                    className="md:hidden p-2 rounded text-gray-600 hover:bg-gray-100"
+                    onClick={() => setMenuOpen((o) => !o)}
+                    aria-label="Toggle menu"
+                  >
+                    {menuOpen ? (
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    ) : (
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
+        {user && menuOpen && (
           <div className="md:hidden border-t px-4 py-2 flex flex-col gap-1">
             <ul>
               {navLinks.map((link) => (
@@ -98,24 +104,15 @@ export default function Navbar() {
               ))}
             </ul>
             <div className="border-t pt-2 mt-1">
-              {user ? (
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-gray-600">{user.name}</span>
-                  <button
-                    onClick={logout}
-                    className="text-sm font-medium text-gray-600 hover:text-fkb-mid"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              ) : (
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-gray-600">{user.name}</span>
                 <button
-                  onClick={() => { setShowLogin(true); setMenuOpen(false); }}
-                  className="w-full bg-fkb-mid text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-fkb-hover transition-colors"
+                  onClick={logout}
+                  className="text-sm font-medium text-gray-600 hover:text-fkb-mid"
                 >
-                  Sign in
+                  Sign out
                 </button>
-              )}
+              </div>
             </div>
           </div>
         )}
