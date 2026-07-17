@@ -1,6 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
+import { useFields } from "@/context/FieldsContext";
+import { groupSessions } from "@/lib/sessions";
 import NewBookingButtons from "@/components/NewBookingButtons";
 
 interface Slot {
@@ -22,12 +24,16 @@ interface Booking {
   slots: Slot[] | null;
 }
 
-type BookingEvent = {
-  rowspan: number;
-  slotNames: string[];
+type SessionEntry = {
+  label: string | null;
   fromLabel: string;
   toLabel: string;
-  isBothPitches: boolean;
+  isWholeField: boolean;
+};
+
+type CalendarCell = {
+  rowspan: number;
+  entries: SessionEntry[];
 };
 
 const TIME_SLOTS = Array.from({ length: 28 }, (_, i) => 480 + i * 30); // 8:00–21:30
@@ -96,37 +102,19 @@ export default function CalendarPage() {
     [monday]
   );
 
-  const flatSlots = useMemo(() => {
-    if (!data) return [];
-    return data.flatMap(booking =>
-      (booking.slots ?? []).map(slot => ({
-        id: slot.id,
-        pitchId: slot.pitchId,
-        name: slot.name,
-        from: new Date(slot.from),
-        to: new Date(slot.to),
-      }))
-    );
-  }, [data]);
+  const { fields } = useFields();
+
+  const sessions = useMemo(() => groupSessions(data ?? [], fields), [data, fields]);
 
   const { dayEvents, skipSets } = useMemo(() => {
     const dayEvents = weekDays.map(day => {
-      const events = new Map<number, BookingEvent>();
+      const cells = new Map<number, CalendarCell>();
 
-      const daySlots = flatSlots.filter(s => s.from.toDateString() === day.toDateString());
+      const daySessions = sessions.filter(s => s.from.toDateString() === day.toDateString());
 
-      const groups = new Map<string, typeof daySlots>();
-      for (const slot of daySlots) {
-        const key = `${slot.from.getTime()}-${slot.to.getTime()}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key)!.push(slot);
-      }
-
-      for (const [, slots] of groups) {
-        const from = slots[0].from;
-        const to = slots[0].to;
-        const startMins = from.getHours() * 60 + from.getMinutes();
-        const endMins = to.getHours() * 60 + to.getMinutes();
+      for (const session of daySessions) {
+        const startMins = session.from.getHours() * 60 + session.from.getMinutes();
+        const endMins = session.to.getHours() * 60 + session.to.getMinutes();
 
         const rowIndex = TIME_SLOTS.findIndex(t => t >= startMins);
         if (rowIndex === -1) continue;
@@ -135,24 +123,24 @@ export default function CalendarPage() {
         const actualEnd = endRowIndex === -1 ? TIME_SLOTS.length : endRowIndex;
         const rowspan = Math.max(1, actualEnd - rowIndex);
 
-        const isWholeField = slots.length === 2 &&
-          slots[0].pitchId !== slots[1].pitchId &&
-          !!slots[0].name &&
-          slots[0].name === slots[1].name;
+        const entry: SessionEntry = {
+          label: session.label,
+          fromLabel: formatTime(session.from),
+          toLabel: formatTime(session.to),
+          isWholeField: session.isWholeField,
+        };
 
-        const slotNames = isWholeField
-          ? [slots[0].name as string]
-          : slots.map(s => s.name ?? "").filter(Boolean);
-
-        events.set(rowIndex, {
-          rowspan,
-          slotNames,
-          fromLabel: formatTime(from),
-          toLabel: formatTime(to),
-          isBothPitches: slots.length >= 2,
-        });
+        // Sessions of different bookings can start in the same row; they share
+        // the cell but keep their own label and times.
+        const existing = cells.get(rowIndex);
+        if (existing) {
+          existing.entries.push(entry);
+          existing.rowspan = Math.max(existing.rowspan, rowspan);
+        } else {
+          cells.set(rowIndex, { rowspan, entries: [entry] });
+        }
       }
-      return events;
+      return cells;
     });
 
     const skipSets = dayEvents.map(events => {
@@ -164,7 +152,7 @@ export default function CalendarPage() {
     });
 
     return { dayEvents, skipSets };
-  }, [flatSlots, weekDays]);
+  }, [sessions, weekDays]);
 
   const todayStr = new Date().toDateString();
 
@@ -259,23 +247,30 @@ export default function CalendarPage() {
                       );
                     }
 
+                    const isFull =
+                      event.entries.length >= 2 || event.entries[0].isWholeField;
+
                     return (
                       <td
                         key={di}
                         rowSpan={event.rowspan}
                         className={`px-2 py-1 border-r border-fkb-border/50 last:border-r-0 align-top text-fkb-dark ${
-                          event.isBothPitches ? "bg-fkb-pale" : ""
+                          isFull ? "bg-fkb-pale" : ""
                         }`}
-                        style={event.isBothPitches ? undefined : {
+                        style={isFull ? undefined : {
                           background: "linear-gradient(to right, var(--color-fkb-pale) 50%, transparent 50%)"
                         }}
                       >
-                        <div className="text-xs font-semibold leading-tight truncate">
-                          {event.slotNames.join(" – ")}
-                        </div>
-                        <div className="text-xs text-fkb-mid leading-tight">
-                          {event.fromLabel} – {event.toLabel}
-                        </div>
+                        {event.entries.map((entry, i) => (
+                          <div key={i} className={i > 0 ? "mt-1" : undefined}>
+                            <div className="text-xs font-semibold leading-tight truncate">
+                              {entry.label}
+                            </div>
+                            <div className="text-xs text-fkb-mid leading-tight">
+                              {entry.fromLabel} – {entry.toLabel}
+                            </div>
+                          </div>
+                        ))}
                       </td>
                     );
                   })}

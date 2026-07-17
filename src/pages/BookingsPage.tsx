@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
+import { useFields } from "@/context/FieldsContext";
+import { groupSessions, type Session } from "@/lib/sessions";
 import NewBookingButtons from "@/components/NewBookingButtons";
 import CancelBookingModal from "@/components/CancelBookingModal";
 
@@ -43,6 +45,17 @@ export default function BookingsPage() {
 
   const [cancelling, setCancelling] = useState<Booking | null>(null);
 
+  const { fields } = useFields();
+  const sessionsByBooking = new Map<string, Session[]>();
+  for (const session of groupSessions(data ?? [], fields)) {
+    const list = sessionsByBooking.get(session.bookingId);
+    if (list) list.push(session);
+    else sessionsByBooking.set(session.bookingId, [session]);
+  }
+  const pitchNames = new Map(
+    (fields ?? []).flatMap((f) => f.pitches.map((p) => [p.id, p.name] as const))
+  );
+
   if (!hasContext) {
     return (
       <div className="text-gray-500">
@@ -59,11 +72,8 @@ export default function BookingsPage() {
     ? `${data[0].contact.firstName ?? ""} ${data[0].contact.lastName ?? ""}`.trim()
     : null;
 
-  const formatSlotTime = (from: string, to: string) => {
-    const f = new Date(from);
-    const t = new Date(to);
-    return `${f.toLocaleDateString()} ${f.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – ${t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-  };
+  const formatSessionTime = (from: Date, to: Date) =>
+    `${from.toLocaleDateString()} ${from.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – ${to.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
   return (
     <>
@@ -89,7 +99,7 @@ export default function BookingsPage() {
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Contact</th>
-                <th className="px-4 py-3">Slots</th>
+                <th className="px-4 py-3">Sessions</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -105,10 +115,25 @@ export default function BookingsPage() {
                       : <span className="text-gray-400">—</span>}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                    {booking.slots?.length > 0 ? (
+                    {(sessionsByBooking.get(booking.id)?.length ?? 0) > 0 ? (
                       <div className="flex flex-col gap-0.5">
-                        {booking.slots.map((slot) => (
-                          <span key={slot.id}>{formatSlotTime(slot.from, slot.to)}</span>
+                        {sessionsByBooking.get(booking.id)!.map((session) => (
+                          <span key={session.key} className="flex items-center gap-2">
+                            {formatSessionTime(session.from, session.to)}
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                                session.isWholeField
+                                  ? "bg-fkb-pale text-fkb-dark"
+                                  : "bg-gray-100 text-gray-600"
+                              }`}
+                            >
+                              {session.isWholeField
+                                ? "Whole field"
+                                : session.pitchIds
+                                    .map((id) => pitchNames.get(id) ?? "…")
+                                    .join(", ")}
+                            </span>
+                          </span>
                         ))}
                       </div>
                     ) : (
