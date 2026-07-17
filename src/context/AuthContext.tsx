@@ -10,6 +10,11 @@ interface AuthContextValue {
   user: User | null;
   initialising: boolean;
   login: (email: string, password: string) => Promise<void>;
+  changePassword: (
+    email: string,
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -38,6 +43,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser({ email: response.email, name: response.userName });
   }, []);
 
+  const changePassword = useCallback(
+    async (email: string, currentPassword: string, newPassword: string) => {
+      const response = await api.put<LoginResponse>("/v1/auth/password", {
+        email,
+        currentPassword,
+        newPassword,
+      });
+      localStorage.setItem("token", response.token);
+      setUser({ email: response.email, name: response.userName });
+    },
+    []
+  );
+
   const logout = useCallback(async () => {
     try {
       await api.put("/v1/auth/logout", {});
@@ -48,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, initialising, login, logout }}>
+    <AuthContext.Provider value={{ user, initialising, login, changePassword, logout }}>
       {children}
     </AuthContext.Provider>
   );
