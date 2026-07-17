@@ -6,6 +6,8 @@ import { useFields } from "@/context/FieldsContext";
 import { groupSessions, type Session } from "@/lib/sessions";
 import NewBookingButtons from "@/components/NewBookingButtons";
 import CancelBookingModal from "@/components/CancelBookingModal";
+import EditBookingModal from "@/components/EditBookingModal";
+import EditSessionModal from "@/components/EditSessionModal";
 
 interface Slot {
   id: string;
@@ -44,6 +46,8 @@ export default function BookingsPage() {
   );
 
   const [cancelling, setCancelling] = useState<Booking | null>(null);
+  const [editing, setEditing] = useState<Booking | null>(null);
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
 
   const { fields } = useFields();
   const sessionsByBooking = new Map<string, Session[]>();
@@ -133,6 +137,13 @@ export default function BookingsPage() {
                                     .map((id) => pitchNames.get(id) ?? "…")
                                     .join(", ")}
                             </span>
+                            <button
+                              onClick={() => setEditingSession(session)}
+                              className="text-xs text-fkb-mid hover:text-fkb-hover font-medium"
+                              title="Edit session"
+                            >
+                              ✎
+                            </button>
                           </span>
                         ))}
                       </div>
@@ -141,12 +152,20 @@ export default function BookingsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => setCancelling(booking)}
-                      className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={() => setEditing(booking)}
+                        className="text-xs font-medium text-fkb-dark border border-fkb-dark/40 rounded-lg px-3 py-1.5 hover:bg-fkb-pale transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setCancelling(booking)}
+                        className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -160,6 +179,23 @@ export default function BookingsPage() {
           booking={cancelling}
           onClose={() => setCancelling(null)}
           onCancelled={refetch}
+        />
+      )}
+
+      {editing && (
+        <EditBookingModal
+          booking={editing}
+          onClose={() => setEditing(null)}
+          onSaved={refetch}
+        />
+      )}
+
+      {editingSession && (
+        <EditSessionModal
+          bookingId={editingSession.bookingId}
+          session={editingSession}
+          onClose={() => setEditingSession(null)}
+          onSaved={refetch}
         />
       )}
     </>
