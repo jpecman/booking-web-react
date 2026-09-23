@@ -36,7 +36,7 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.post("/v1/Field", { name, pitches });
+      await api.post("/v1/fields", { name, pitches });
       onCreated();
       onClose();
     } catch (err) {

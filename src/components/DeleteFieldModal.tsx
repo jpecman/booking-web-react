@@ -16,7 +16,7 @@ export default function DeleteFieldModal({ field, onClose, onDeleted }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.delete(`/v1/Field/${field.id}`);
+      await api.delete(`/v1/fields/${field.id}`);
       onDeleted();
       onClose();
     } catch (err) {

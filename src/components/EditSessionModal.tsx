@@ -45,7 +45,7 @@ export default function EditSessionModal({ bookingId, session, onClose, onSaved 
     try {
       const newFrom = new Date(`${form.date}T${form.time}`);
       const newTo = new Date(newFrom.getTime() + Number(form.duration) * 60000);
-      await api.put(`/v1/Booking/${bookingId}/sessions`, {
+      await api.put(`/v1/bookings/${bookingId}/sessions`, {
         currentFrom: session.from.toISOString(),
         currentTo: session.to.toISOString(),
         newFrom: newFrom.toISOString(),

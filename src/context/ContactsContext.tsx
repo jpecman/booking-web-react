@@ -24,7 +24,7 @@ const ContactsContext = createContext<ContactsContextValue | null>(null);
 export function ContactsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { data, loading, error, refetch } = useFetch<Contact[]>(
-    () => api.get("/v1/contact"),
+    () => api.get("/v1/contacts"),
     [user],
     { enabled: !!user }
   );

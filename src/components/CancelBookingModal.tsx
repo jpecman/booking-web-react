@@ -21,7 +21,7 @@ export default function CancelBookingModal({ booking, onClose, onCancelled }: Pr
     setError(null);
     setLoading(true);
     try {
-      await api.delete(`/v1/Booking/${booking.id}`, {
+      await api.delete(`/v1/bookings/${booking.id}`, {
         body: JSON.stringify({ cancellationReason: reason || null }),
         headers: { "Content-Type": "application/json" },
       });

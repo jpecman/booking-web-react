@@ -93,7 +93,7 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
     }
     setLoading(true);
     try {
-      await api.post("/v1/Booking/camp", {
+      await api.post("/v1/bookings/camp", {
         name: form.name || undefined,
         isWholeField: form.isWholeField,
         contactId: form.contactId,

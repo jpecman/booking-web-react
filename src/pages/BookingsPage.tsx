@@ -39,7 +39,7 @@ export default function BookingsPage() {
   const { data, loading, error, refetch } = useFetch<Booking[]>(
     () =>
       api.get(
-        `/v1/Booking?From=${encodeURIComponent(from!)}&To=${encodeURIComponent(to!)}&ContactId=${encodeURIComponent(contactId!)}`
+        `/v1/bookings?from=${encodeURIComponent(from!)}&to=${encodeURIComponent(to!)}&contactId=${encodeURIComponent(contactId!)}`
       ),
     [contactId, from, to],
     { enabled: hasContext }

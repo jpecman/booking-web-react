@@ -98,7 +98,7 @@ export default function CalendarPage() {
     }), [monday]);
 
   const { data, refetch } = useFetch<Booking[]>(
-    () => api.get(`/v1/Booking?From=${monday.toISOString()}&To=${fetchTo}`),
+    () => api.get(`/v1/bookings?from=${monday.toISOString()}&to=${fetchTo}`),
     [monday]
   );
 

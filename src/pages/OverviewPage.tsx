@@ -88,7 +88,7 @@ export default function OverviewPage() {
   const toIso = useMemo(() => to.toISOString(), [to]);
 
   const { data, loading, error, refetch } = useFetch<ContactBookingSummary[]>(
-    () => api.get(`/v1/booking-summary?From=${fromIso}&To=${toIso}`),
+    () => api.get(`/v1/reports/contact-bookings?from=${fromIso}&to=${toIso}`),
     [fromIso, toIso]
   );
 

@@ -38,14 +38,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const response = await api.put<LoginResponse>("/v1/auth/login", { email, password });
+    const response = await api.post<LoginResponse>("/v1/auth/login", { email, password });
     localStorage.setItem("token", response.token);
     setUser({ email: response.email, name: response.userName });
   }, []);
 
   const changePassword = useCallback(
     async (email: string, currentPassword: string, newPassword: string) => {
-      const response = await api.put<LoginResponse>("/v1/auth/password", {
+      const response = await api.post<LoginResponse>("/v1/auth/password", {
         email,
         currentPassword,
         newPassword,
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await api.put("/v1/auth/logout", {});
+      await api.post("/v1/auth/logout", {});
     } finally {
       localStorage.removeItem("token");
       setUser(null);

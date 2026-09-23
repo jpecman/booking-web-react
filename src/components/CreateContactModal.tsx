@@ -25,7 +25,7 @@ export default function CreateContactModal({ onClose, onCreated }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.post("/v1/contact", {
+      await api.post("/v1/contacts", {
         ...form,
         phone: form.phone || undefined,
       });

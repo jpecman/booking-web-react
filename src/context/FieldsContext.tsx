@@ -26,7 +26,7 @@ const FieldsContext = createContext<FieldsContextValue | null>(null);
 export function FieldsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { data, loading, error, refetch } = useFetch<Field[]>(
-    () => api.get("/v1/Field"),
+    () => api.get("/v1/fields"),
     [user],
     { enabled: !!user }
   );

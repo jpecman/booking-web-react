@@ -21,7 +21,7 @@ export default function DeleteContactModal({ contact, onClose, onDeleted }: Prop
     setError(null);
     setLoading(true);
     try {
-      await api.delete(`/v1/contact/${contact.id}`);
+      await api.delete(`/v1/contacts/${contact.id}`);
       onDeleted();
       onClose();
     } catch (err) {

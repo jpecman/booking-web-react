@@ -35,7 +35,7 @@ export default function EditContactModal({ contact, onClose, onSaved }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.put(`/v1/contact/${contact.id}`, {
+      await api.put(`/v1/contacts/${contact.id}`, {
         ...form,
         phone: form.phone || undefined,
       });

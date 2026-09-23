@@ -40,7 +40,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
     setPitchError(null);
     setRenamingId(pitchId);
     try {
-      const updated = await api.put<Pitch>(`/v1/Pitch/${pitchId}`, { name: trimmed });
+      const updated = await api.put<Pitch>(`/v1/pitches/${pitchId}`, { name: trimmed });
       setPitches((ps) => ps.map((p) => (p.id === pitchId ? updated : p)));
       setEditingId(null);
       onSaved();
@@ -55,7 +55,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
     setPitchError(null);
     setDeletingId(pitchId);
     try {
-      await api.delete(`/v1/Pitch/${pitchId}`);
+      await api.delete(`/v1/pitches/${pitchId}`);
       setPitches((ps) => ps.filter((p) => p.id !== pitchId));
       onSaved();
     } catch (err) {
@@ -71,7 +71,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
     setPitchError(null);
     setAddingPitch(true);
     try {
-      const created = await api.post<Pitch>("/v1/Pitch", { fieldId: field.id, name: trimmed });
+      const created = await api.post<Pitch>("/v1/pitches", { fieldId: field.id, name: trimmed });
       setPitches((ps) => [...ps, created]);
       setNewPitchName("");
       onSaved();
@@ -94,7 +94,7 @@ export default function EditFieldModal({ field, onClose, onSaved }: Props) {
     setNameError(null);
     setSavingName(true);
     try {
-      await api.put(`/v1/Field/${field.id}`, { name });
+      await api.put(`/v1/fields/${field.id}`, { name });
       onSaved();
       onClose();
     } catch (err) {

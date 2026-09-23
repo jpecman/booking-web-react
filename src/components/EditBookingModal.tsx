@@ -30,7 +30,7 @@ export default function EditBookingModal({ booking, onClose, onSaved }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.put(`/v1/Booking/${booking.id}`, {
+      await api.put(`/v1/bookings/${booking.id}`, {
         name: form.name,
         contactId: form.contactId,
       });

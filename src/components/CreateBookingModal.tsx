@@ -39,7 +39,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     setError(null);
     setLoading(true);
     try {
-      await api.post("/v1/Booking", {
+      await api.post("/v1/bookings", {
         name: form.name,
         from: new Date(`${form.fromDate}T${form.fromTime}`).toISOString(),
         duration: Number(form.duration),
