@@ -3,7 +3,9 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
 
-export default defineConfig({
+// Production is served from https://fkborovany.cz/bookings/; dev stays at the root.
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/bookings/" : "/",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -22,4 +24,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
