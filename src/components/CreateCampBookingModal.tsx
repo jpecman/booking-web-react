@@ -61,6 +61,8 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
     contactId: "",
     fieldId: "",
     isWholeField: true,
+    repeatWeekly: false,
+    endDate: "",
   });
   const [sessions, setSessions] = useState<Session[]>(defaultSessions);
   const [error, setError] = useState<string | null>(null);
@@ -84,11 +86,17 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
 
   const removeSession = (key: string) => setSessions((s) => s.filter((session) => session.key !== key));
 
+  const lastSessionDate = sessions.reduce((max, s) => (s.date > max ? s.date : max), "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (sessions.length === 0) {
       setError("Add at least one slot");
+      return;
+    }
+    if (form.repeatWeekly && form.endDate < lastSessionDate) {
+      setError("End date must be after the last slot");
       return;
     }
     setLoading(true);
@@ -103,6 +111,7 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
           duration: Number(s.duration),
           price: Number(s.price),
         })),
+        endDate: form.repeatWeekly ? new Date(`${form.endDate}T23:59:59`).toISOString() : undefined,
       });
       onCreated();
       onClose();
@@ -235,6 +244,30 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
               Add slot
             </button>
           </div>
+
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.repeatWeekly}
+              onChange={(e) => set("repeatWeekly", e.target.checked)}
+              className="w-4 h-4 accent-fkb-mid"
+            />
+            Repeat weekly
+          </label>
+
+          {form.repeatWeekly && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">Until</label>
+              <input
+                type="date"
+                required
+                min={lastSessionDate || undefined}
+                value={form.endDate}
+                onChange={(e) => set("endDate", e.target.value)}
+                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
+              />
+            </div>
+          )}
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
 
