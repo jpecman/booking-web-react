@@ -2,15 +2,19 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
 import { useFields } from "@/context/FieldsContext";
-import { groupSessions } from "@/lib/sessions";
+import { groupBlocks, type Block } from "@/lib/sessions";
 import NewBookingButtons from "@/components/NewBookingButtons";
+import EditBlockModal from "@/components/EditBlockModal";
 
 interface Slot {
   id: string;
   from: string;
   to: string;
   pitchId: string;
+  bookingId: string;
   name: string | null;
+  price: number;
+  status: number;
 }
 
 interface Booking {
@@ -25,10 +29,11 @@ interface Booking {
 }
 
 type SessionEntry = {
+  block: Block;
   label: string | null;
   fromLabel: string;
   toLabel: string;
-  isWholeField: boolean;
+  isFull: boolean;
 };
 
 type CalendarCell = {
@@ -57,6 +62,12 @@ function formatWeekRange(mon: Date): string {
 
 function formatTime(d: Date): string {
   return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+}
+
+// Whole field → the booking's name; halves → both names, in pitchId order.
+function blockLabel(block: Block): string | null {
+  if (block.isWholeField) return block.slots[0].name;
+  return block.slots.map(s => s.name).filter(Boolean).join(" - ") || null;
 }
 
 export default function CalendarPage() {
@@ -104,7 +115,14 @@ export default function CalendarPage() {
 
   const { fields } = useFields();
 
-  const sessions = useMemo(() => groupSessions(data ?? [], fields), [data, fields]);
+  const [editingBlock, setEditingBlock] = useState<Block | null>(null);
+
+  const sessions = useMemo(() => groupBlocks(data ?? [], fields), [data, fields]);
+
+  const pitchCountByField = useMemo(
+    () => new Map((fields ?? []).map(f => [f.id, f.pitches.length])),
+    [fields]
+  );
 
   const { dayEvents, skipSets } = useMemo(() => {
     const dayEvents = weekDays.map(day => {
@@ -123,14 +141,16 @@ export default function CalendarPage() {
         const actualEnd = endRowIndex === -1 ? TIME_SLOTS.length : endRowIndex;
         const rowspan = Math.max(1, actualEnd - rowIndex);
 
+        const occupiedPitches = new Set(session.slots.map(s => s.pitchId)).size;
         const entry: SessionEntry = {
-          label: session.label,
+          block: session,
+          label: blockLabel(session),
           fromLabel: formatTime(session.from),
           toLabel: formatTime(session.to),
-          isWholeField: session.isWholeField,
+          isFull: session.isWholeField || occupiedPitches === pitchCountByField.get(session.fieldId),
         };
 
-        // Sessions of different bookings can start in the same row; they share
+        // Blocks of different fields can start in the same row; they share
         // the cell but keep their own label and times.
         const existing = cells.get(rowIndex);
         if (existing) {
@@ -152,7 +172,7 @@ export default function CalendarPage() {
     });
 
     return { dayEvents, skipSets };
-  }, [sessions, weekDays]);
+  }, [sessions, weekDays, pitchCountByField]);
 
   const todayStr = new Date().toDateString();
 
@@ -248,7 +268,7 @@ export default function CalendarPage() {
                     }
 
                     const isFull =
-                      event.entries.length >= 2 || event.entries[0].isWholeField;
+                      event.entries.length >= 2 || event.entries[0].isFull;
 
                     return (
                       <td
@@ -262,14 +282,19 @@ export default function CalendarPage() {
                         }}
                       >
                         {event.entries.map((entry, i) => (
-                          <div key={i} className={i > 0 ? "mt-1" : undefined}>
+                          <button
+                            key={entry.block.key}
+                            type="button"
+                            onClick={() => setEditingBlock(entry.block)}
+                            className={`block w-full text-left hover:underline ${i > 0 ? "mt-1" : ""}`}
+                          >
                             <div className="text-xs font-semibold leading-tight truncate">
                               {entry.label}
                             </div>
                             <div className="text-xs text-fkb-mid leading-tight">
                               {entry.fromLabel} – {entry.toLabel}
                             </div>
-                          </div>
+                          </button>
                         ))}
                       </td>
                     );
@@ -281,6 +306,13 @@ export default function CalendarPage() {
         </table>
       </div>
 
+      {editingBlock && (
+        <EditBlockModal
+          block={editingBlock}
+          onClose={() => setEditingBlock(null)}
+          onSaved={refetch}
+        />
+      )}
     </>
   );
 }

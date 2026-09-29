@@ -7,6 +7,7 @@ export interface SessionSlotInput {
   to: string;
   pitchId: string;
   price?: number;
+  bookingId?: string;
 }
 
 export interface BookingWithSlots {
@@ -75,4 +76,86 @@ export function groupSessions(
   }
 
   return sessions;
+}
+
+export interface BlockSlot {
+  id: string;
+  bookingId: string;
+  pitchId: string;
+  name: string | null;
+  price: number;
+}
+
+/**
+ * One time range on one field. The slots may belong to different bookings
+ * (e.g. each half of the field booked separately); they are ordered by pitchId.
+ */
+export interface Block {
+  key: string;
+  fieldId: string;
+  from: Date;
+  to: Date;
+  slots: BlockSlot[];
+  totalPrice: number;
+  isWholeField: boolean;
+}
+
+export function groupBlocks(
+  bookings: BookingWithSlots[],
+  fields: Field[] | null
+): Block[] {
+  // Without fields we can't tell which pitches belong together.
+  if (!fields) return [];
+
+  const fieldByPitchId = new Map<string, Field>();
+  for (const field of fields) {
+    for (const pitch of field.pitches) fieldByPitchId.set(pitch.id, field);
+  }
+
+  const byKey = new Map<string, { field: Field; from: string; to: string; slots: BlockSlot[] }>();
+  for (const booking of bookings) {
+    for (const slot of booking.slots ?? []) {
+      const field = fieldByPitchId.get(slot.pitchId);
+      if (!field) continue;
+
+      const key = `${field.id}|${slot.from}|${slot.to}`;
+      const blockSlot: BlockSlot = {
+        id: slot.id,
+        bookingId: slot.bookingId ?? booking.id,
+        pitchId: slot.pitchId,
+        name: slot.name,
+        price: slot.price ?? 0,
+      };
+      const group = byKey.get(key);
+      if (group) group.slots.push(blockSlot);
+      else byKey.set(key, { field, from: slot.from, to: slot.to, slots: [blockSlot] });
+    }
+  }
+
+  const blocks: Block[] = [];
+  for (const [key, { field, from, to, slots }] of byKey) {
+    slots.sort((a, b) => a.pitchId.localeCompare(b.pitchId));
+
+    const pitchesByBooking = new Map<string, Set<string>>();
+    for (const slot of slots) {
+      const pitches = pitchesByBooking.get(slot.bookingId);
+      if (pitches) pitches.add(slot.pitchId);
+      else pitchesByBooking.set(slot.bookingId, new Set([slot.pitchId]));
+    }
+    const isWholeField = [...pitchesByBooking.values()].some(
+      (pitches) => pitches.size === field.pitches.length
+    );
+
+    blocks.push({
+      key,
+      fieldId: field.id,
+      from: new Date(from),
+      to: new Date(to),
+      slots,
+      totalPrice: slots.reduce((sum, s) => sum + s.price, 0),
+      isWholeField,
+    });
+  }
+
+  return blocks;
 }
