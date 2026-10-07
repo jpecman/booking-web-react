@@ -39,7 +39,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await api.post<LoginResponse>("/v1/auth/login", { email, password });
-    localStorage.setItem("token", response.token);
     setUser({ email: response.email, name: response.userName });
   }, []);
 
@@ -50,7 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         currentPassword,
         newPassword,
       });
-      localStorage.setItem("token", response.token);
       setUser({ email: response.email, name: response.userName });
     },
     []
@@ -60,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await api.post("/v1/auth/logout", {});
     } finally {
-      localStorage.removeItem("token");
       setUser(null);
     }
   }, []);
