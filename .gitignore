@@ -34,3 +34,6 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Local-only files (e.g. API swagger.json), not committed
+local/
