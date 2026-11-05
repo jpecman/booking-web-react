@@ -6,15 +6,31 @@ import { useFields } from "@/context/FieldsContext";
 interface Props {
   onClose: () => void;
   onCreated: () => void;
+  // Monday of the week to default the date to (e.g. the Calendar's selected week).
+  weekStart?: Date;
 }
 
-export default function CreateBookingModal({ onClose, onCreated }: Props) {
+// Local date, not UTC: toISOString() would shift local midnight to the previous day.
+const pad = (n: number) => String(n).padStart(2, "0");
+const toDateInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+// Today if it falls in the given week (or no week is given), otherwise that week's Monday.
+function defaultStartDate(weekStart?: Date) {
+  const today = new Date();
+  if (!weekStart) return today;
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  return today >= weekStart && today < weekEnd ? today : new Date(weekStart);
+}
+
+export default function CreateBookingModal({ onClose, onCreated, weekStart }: Props) {
   const { contacts } = useContacts();
   const { fields } = useFields();
 
+  const startDate = defaultStartDate(weekStart);
   const [form, setForm] = useState({
     name: "",
-    fromDate: new Date().toISOString().slice(0, 10),
+    fromDate: toDateInput(startDate),
     fromTime: "09:00",
     duration: "90",
     price: "1000",
@@ -22,7 +38,7 @@ export default function CreateBookingModal({ onClose, onCreated }: Props) {
     contactId: "",
     fieldId: "",
     recurring: false,
-    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().slice(0, 10),
+    endDate: toDateInput(new Date(new Date(startDate).setMonth(startDate.getMonth() + 1))),
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

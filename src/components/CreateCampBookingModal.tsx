@@ -6,6 +6,8 @@ import { useFields } from "@/context/FieldsContext";
 interface Props {
   onClose: () => void;
   onCreated: () => void;
+  // Monday of the week to pre-fill sessions for (e.g. the Calendar's selected week).
+  weekStart?: Date;
 }
 
 interface Session {
@@ -16,17 +18,25 @@ interface Session {
   price: string;
 }
 
-const toDateInput = (d: Date) => d.toISOString().slice(0, 10);
+// Local date, not UTC: toISOString() would shift local midnight to the previous day.
+const pad = (n: number) => String(n).padStart(2, "0");
+const toDateInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
-function getNextThursday() {
+// The Thursday of the given week, or the next Thursday from today.
+function getThursday(weekStart?: Date) {
+  if (weekStart) {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + 3);
+    return d;
+  }
   const d = new Date();
   const diff = (4 - d.getDay() + 7) % 7;
   d.setDate(d.getDate() + diff);
   return d;
 }
 
-function defaultSessions(): Session[] {
-  const thu = getNextThursday();
+function defaultSessions(weekStart?: Date): Session[] {
+  const thu = getThursday(weekStart);
   const fri = new Date(thu);
   fri.setDate(fri.getDate() + 1);
   const sat = new Date(thu);
@@ -52,7 +62,7 @@ function defaultSessions(): Session[] {
   }));
 }
 
-export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
+export default function CreateCampBookingModal({ onClose, onCreated, weekStart }: Props) {
   const { contacts } = useContacts();
   const { fields } = useFields();
 
@@ -64,7 +74,7 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
     repeatWeekly: false,
     endDate: "",
   });
-  const [sessions, setSessions] = useState<Session[]>(defaultSessions);
+  const [sessions, setSessions] = useState<Session[]>(() => defaultSessions(weekStart));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -81,7 +91,13 @@ export default function CreateCampBookingModal({ onClose, onCreated }: Props) {
   const addSession = () =>
     setSessions((s) => [
       ...s,
-      { key: crypto.randomUUID(), date: toDateInput(new Date()), time: "09:00", duration: "90", price: "1000" },
+      {
+        key: crypto.randomUUID(),
+        date: toDateInput(weekStart ? getThursday(weekStart) : new Date()),
+        time: "09:00",
+        duration: "90",
+        price: "1000",
+      },
     ]);
 
   const removeSession = (key: string) => setSessions((s) => s.filter((session) => session.key !== key));

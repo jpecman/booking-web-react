@@ -4,9 +4,11 @@ import CreateCampBookingModal from "@/components/CreateCampBookingModal";
 
 interface Props {
   onCreated: () => void;
+  // Monday of the week the new booking should default to (e.g. the Calendar's selected week).
+  weekStart?: Date;
 }
 
-export default function NewBookingButtons({ onCreated }: Props) {
+export default function NewBookingButtons({ onCreated, weekStart }: Props) {
   const [creating, setCreating] = useState(false);
   const [creatingCamp, setCreatingCamp] = useState(false);
 
@@ -28,11 +30,11 @@ export default function NewBookingButtons({ onCreated }: Props) {
       </div>
 
       {creating && (
-        <CreateBookingModal onClose={() => setCreating(false)} onCreated={onCreated} />
+        <CreateBookingModal onClose={() => setCreating(false)} onCreated={onCreated} weekStart={weekStart} />
       )}
 
       {creatingCamp && (
-        <CreateCampBookingModal onClose={() => setCreatingCamp(false)} onCreated={onCreated} />
+        <CreateCampBookingModal onClose={() => setCreatingCamp(false)} onCreated={onCreated} weekStart={weekStart} />
       )}
     </>
   );
