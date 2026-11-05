@@ -103,7 +103,7 @@ export default function CreateFieldModal({ onClose, onCreated }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg transition-colors"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors"
             >
               Cancel
             </button>
