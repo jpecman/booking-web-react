@@ -56,6 +56,15 @@ export default function BookingsPage() {
     if (list) list.push(session);
     else sessionsByBooking.set(session.bookingId, [session]);
   }
+  // Sessions are time-sorted, so map insertion order is bookings by earliest session.
+  const bookingOrder = new Map([...sessionsByBooking.keys()].map((id, i) => [id, i]));
+  const sortedBookings = (data ?? [])
+    .slice()
+    .sort(
+      (a, b) =>
+        (bookingOrder.get(a.id) ?? bookingOrder.size) -
+        (bookingOrder.get(b.id) ?? bookingOrder.size)
+    );
   const pitchNames = new Map(
     (fields ?? []).flatMap((f) => f.pitches.map((p) => [p.id, p.name] as const))
   );
@@ -108,7 +117,7 @@ export default function BookingsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-fkb-border/50">
-              {data.map((booking) => (
+              {sortedBookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-fkb-bg transition-colors">
                   <td className="px-4 py-3 font-medium text-gray-900">
                     {booking.name ?? <span className="text-gray-400">—</span>}

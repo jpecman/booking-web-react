@@ -75,6 +75,10 @@ export function groupSessions(
     }
   }
 
+  sessions.sort(
+    (a, b) => a.from.getTime() - b.from.getTime() || a.to.getTime() - b.to.getTime()
+  );
+
   return sessions;
 }
 
