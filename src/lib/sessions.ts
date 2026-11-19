@@ -82,6 +82,48 @@ export function groupSessions(
   return sessions;
 }
 
+/**
+ * Splits a repeated booking's sessions into those on its regular weekly slot (the most
+ * common weekday, start time, duration and pitches) and the exceptions, e.g. moved sessions.
+ * Ties go to the earliest pattern, as sessions arrive time-sorted.
+ */
+export function splitRepeated(sessions: Session[]): {
+  regular: Session[];
+  exceptions: Session[];
+} {
+  const patternKey = (s: Session) =>
+    [
+      s.from.getDay(),
+      s.from.getHours(),
+      s.from.getMinutes(),
+      s.to.getTime() - s.from.getTime(),
+      [...s.pitchIds].sort().join(","),
+    ].join("|");
+
+  const counts = new Map<string, number>();
+  for (const s of sessions) {
+    const key = patternKey(s);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+
+  let regularKey: string | null = null;
+  let best = 0;
+  for (const [key, count] of counts) {
+    if (count > best) {
+      best = count;
+      regularKey = key;
+    }
+  }
+
+  const regular: Session[] = [];
+  const exceptions: Session[] = [];
+  for (const s of sessions) {
+    if (patternKey(s) === regularKey) regular.push(s);
+    else exceptions.push(s);
+  }
+  return { regular, exceptions };
+}
+
 export interface BlockSlot {
   id: string;
   bookingId: string;

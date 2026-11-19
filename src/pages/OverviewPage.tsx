@@ -28,10 +28,10 @@ const STATUS_LABELS: Record<number, string> = {
 };
 
 const STATUS_STYLES: Record<number, string> = {
-  0: "bg-gray-100 text-gray-600",
-  1: "bg-amber-100 text-amber-700",
-  2: "bg-fkb-pale text-fkb-dark",
-  3: "bg-red-100 text-fkb-danger",
+  0: "bg-gray-100 text-gray-600 border-gray-300",
+  1: "bg-amber-100 text-amber-700 border-amber-300",
+  2: "bg-fkb-pale text-fkb-dark border-fkb-dark/40",
+  3: "bg-red-100 text-fkb-danger border-fkb-danger/40",
 };
 
 function getSeasonStart(date: Date): number {
@@ -155,13 +155,12 @@ export default function OverviewPage() {
       {data && data.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-fkb-border">
           <table className="min-w-full divide-y divide-fkb-border bg-white text-sm">
-            <thead className="bg-fkb-bg text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <thead className="bg-fkb-mid text-left text-xs font-semibold text-white uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">Contact</th>
+                <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Bookings</th>
-                <th className="px-4 py-3">Total price</th>
-                <th className="px-4 py-3">Earliest booking</th>
-                <th className="px-4 py-3">Latest booking</th>
+                <th className="px-4 py-3">Price</th>
                 <th className="px-4 py-3">Status</th>
               </tr>
             </thead>
@@ -183,22 +182,41 @@ export default function OverviewPage() {
                       );
                     })()}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{summary.bookingCount}</td>
-                  <td className="px-4 py-3 text-gray-600">{summary.totalPrice.toLocaleString("cs-CZ")} Kč</td>
                   <td className="px-4 py-3 text-gray-600">
-                    {new Date(summary.earliestBookingDate).toLocaleDateString()}
+                    {(() => {
+                      const first = new Date(summary.earliestBookingDate).toLocaleDateString();
+                      const last = new Date(summary.latestBookingDate).toLocaleDateString();
+                      return first === last ? first : `${first} → ${last}`;
+                    })()}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {new Date(summary.latestBookingDate).toLocaleDateString()}
+                  <td className="px-4 py-3 text-gray-600">{summary.bookingCount}</td>
+                  <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                    {summary.totalPrice.toLocaleString("cs-CZ")} Kč
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLES[summary.status]}`}>
+                    <span
+                      className={`inline-block text-xs font-medium border rounded-lg px-3 py-1.5 ${STATUS_STYLES[summary.status]}`}
+                    >
                       {STATUS_LABELS[summary.status]}
                     </span>
                   </td>
                 </tr>
               ))}
             </tbody>
+            <tfoot className="bg-fkb-bg font-semibold text-gray-900">
+              <tr>
+                <td colSpan={2} className="px-4 py-3 text-right">
+                  Total
+                </td>
+                <td className="px-4 py-3">
+                  {data.reduce((sum, s) => sum + s.bookingCount, 0)}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {data.reduce((sum, s) => sum + s.totalPrice, 0).toLocaleString("cs-CZ")} Kč
+                </td>
+                <td />
+              </tr>
+            </tfoot>
           </table>
         </div>
       )}
