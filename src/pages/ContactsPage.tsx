@@ -30,7 +30,7 @@ export default function ContactsPage() {
       {data && data.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-fkb-border">
           <table className="min-w-full divide-y divide-fkb-border bg-white text-sm">
-            <thead className="bg-fkb-bg text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <thead className="bg-fkb-mid text-left text-xs font-semibold text-white uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">First Name</th>
                 <th className="px-4 py-3">Last Name</th>
@@ -48,7 +48,7 @@ export default function ContactsPage() {
                   <td className="px-4 py-3 text-gray-600">{contact.email}</td>
                   <td className="px-4 py-3 text-gray-600">{contact.phone ?? "—"}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${contact.show ? "bg-fkb-pale text-fkb-dark" : "bg-gray-100 text-gray-500"}`}>
+                    <span className={`inline-block text-xs font-medium border rounded-lg px-3 py-1.5 ${contact.show ? "bg-fkb-pale text-fkb-dark border-fkb-dark/40" : "bg-gray-100 text-gray-500 border-gray-300"}`}>
                       {contact.show ? "Yes" : "No"}
                     </span>
                   </td>
@@ -56,15 +56,23 @@ export default function ContactsPage() {
                     <div className="flex gap-2 justify-end">
                       <button
                         onClick={() => setEditing(contact)}
-                        className="text-xs font-medium text-fkb-dark border border-fkb-dark/40 rounded-lg px-3 py-1.5 hover:bg-fkb-pale transition-colors"
+                        className="text-fkb-dark border border-fkb-dark/40 rounded-lg p-1.5 hover:bg-fkb-pale transition-colors"
+                        title="Edit contact"
+                        aria-label="Edit contact"
                       >
-                        Edit
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4L19.5 8.5a2.5 2.5 0 00-3.536-3.536L4.5 16.5 4 20z" />
+                        </svg>
                       </button>
                       <button
                         onClick={() => setDeleting(contact)}
-                        className="text-xs font-medium text-fkb-danger border border-fkb-danger/40 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+                        className="text-fkb-danger border border-fkb-danger/40 rounded-lg p-1.5 hover:bg-red-50 transition-colors"
+                        title="Delete contact"
+                        aria-label="Delete contact"
                       >
-                        Delete
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                   </td>

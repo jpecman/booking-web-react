@@ -231,14 +231,14 @@ export default function CalendarPage() {
           </colgroup>
           <thead>
             <tr>
-              <th className="w-14 border-b border-r border-fkb-border bg-fkb-bg" />
+              <th className="w-14 border-b border-r border-fkb-border bg-fkb-mid" />
               {weekDays.map((d, i) => (
                 <th
                   key={i}
                   className={`px-2 py-2 text-xs font-semibold text-center border-b border-r border-fkb-border last:border-r-0 ${
                     d.toDateString() === todayStr
-                      ? "bg-fkb-pale text-fkb-dark"
-                      : "bg-fkb-bg text-gray-500"
+                      ? "bg-fkb-dark text-white"
+                      : "bg-fkb-mid text-white"
                   }`}
                 >
                   <div>{DAY_LABELS[i]}</div>

@@ -18,7 +18,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="bg-white shadow">
-        <div className="mx-auto max-w-5xl px-4">
+        <div className="mx-auto max-w-5xl 2xl:max-w-7xl px-4">
           <div className="flex h-16 items-center justify-between">
             <span className="text-xl font-bold text-fkb-dark">BookingApp</span>
 
