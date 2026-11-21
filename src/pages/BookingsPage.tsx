@@ -3,11 +3,11 @@ import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@/api/client";
 import { useFetch } from "@/hooks/useFetch";
 import { useFields } from "@/context/FieldsContext";
-import { groupSessions, splitRepeated, type Session } from "@/lib/sessions";
+import { groupSessions, splitRepeated, type Block, type Session } from "@/lib/sessions";
 import NewBookingButtons from "@/components/NewBookingButtons";
 import CancelBookingModal from "@/components/CancelBookingModal";
 import EditBookingModal from "@/components/EditBookingModal";
-import EditSessionModal from "@/components/EditSessionModal";
+import EditBlockModal from "@/components/EditBlockModal";
 
 interface Slot {
   id: string;
@@ -120,6 +120,32 @@ export default function BookingsPage() {
     const first = sessions[0].from.toLocaleDateString();
     const last = sessions[sessions.length - 1].from.toLocaleDateString();
     return first === last ? first : `${first} → ${last}`;
+  };
+
+  // The session as a Calendar block (this booking's slots only), for the shared edit modal.
+  const toBlock = (session: Session): Block => {
+    const ids = new Set(session.slotIds);
+    const slots = (data?.find((b) => b.id === session.bookingId)?.slots ?? [])
+      .filter((s) => ids.has(s.id))
+      .map((s) => ({
+        id: s.id,
+        bookingId: session.bookingId,
+        pitchId: s.pitchId,
+        name: s.name,
+        price: s.price,
+      }))
+      .sort((a, b) => a.pitchId.localeCompare(b.pitchId));
+    const fieldId =
+      fields?.find((f) => f.pitches.some((p) => p.id === slots[0]?.pitchId))?.id ?? "";
+    return {
+      key: session.key,
+      fieldId,
+      from: session.from,
+      to: session.to,
+      slots,
+      totalPrice: session.totalPrice,
+      isWholeField: session.isWholeField,
+    };
   };
 
   const pitchKey = (session: Session) => [...session.pitchIds].sort().join(",");
@@ -311,7 +337,7 @@ export default function BookingsPage() {
                       </button>
                       <button
                         onClick={() => setCancelling(booking)}
-                        className="text-fkb-danger border border-fkb-danger/40 rounded-lg p-1.5 hover:bg-red-50 transition-colors"
+                        className="text-gray-500 border border-gray-300 rounded-lg p-1.5 hover:text-fkb-danger hover:border-fkb-danger/40 hover:bg-red-50 transition-colors"
                         title="Cancel booking"
                         aria-label="Cancel booking"
                       >
@@ -364,9 +390,8 @@ export default function BookingsPage() {
       )}
 
       {editingSession && (
-        <EditSessionModal
-          bookingId={editingSession.bookingId}
-          session={editingSession}
+        <EditBlockModal
+          block={toBlock(editingSession)}
           onClose={() => setEditingSession(null)}
           onSaved={refetch}
         />

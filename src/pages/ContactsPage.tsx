@@ -66,7 +66,7 @@ export default function ContactsPage() {
                       </button>
                       <button
                         onClick={() => setDeleting(contact)}
-                        className="text-fkb-danger border border-fkb-danger/40 rounded-lg p-1.5 hover:bg-red-50 transition-colors"
+                        className="text-gray-500 border border-gray-300 rounded-lg p-1.5 hover:text-fkb-danger hover:border-fkb-danger/40 hover:bg-red-50 transition-colors"
                         title="Delete contact"
                         aria-label="Delete contact"
                       >

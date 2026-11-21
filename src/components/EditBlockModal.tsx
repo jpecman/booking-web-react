@@ -28,11 +28,13 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
   const [slots, setSlots] = useState(
     block.slots.map((s) => ({ id: s.id, pitchId: s.pitchId, name: s.name ?? "", price: String(s.price) }))
   );
-  // A whole-field booking is edited as one session: one name and the combined price.
-  const [whole, setWhole] = useState({
+  // A single booking is edited as one session: one name and its total price (whole or half).
+  const [single, setSingle] = useState({
     name: block.slots[0]?.name ?? "",
     price: String(Math.round(block.totalPrice * 100) / 100),
   });
+  const [isWhole, setIsWhole] = useState(block.isWholeField);
+  const [priceWarning, setPriceWarning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   // Set while the cancel confirmation is shown: which slots to cancel and how to describe them.
@@ -54,12 +56,11 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
   const setSlot = (id: string, key: "name" | "price", value: string) =>
     setSlots((list) => list.map((s) => (s.id === id ? { ...s, [key]: value } : s)));
 
-  // Split the total equally in cents; leftover cents go to the first slots so the parts sum exactly.
-  const splitPrice = (total: number, count: number) => {
-    const cents = Math.round(total * 100);
-    const base = Math.floor(cents / count);
-    const remainder = cents - base * count;
-    return Array.from({ length: count }, (_, i) => (base + (i < remainder ? 1 : 0)) / 100);
+  // The price is left as is; the warning asks the user to check it for the new size.
+  const changeSize = (toWhole: boolean) => {
+    if (toWhole === isWhole) return;
+    setIsWhole(toWhole);
+    setPriceWarning(toWhole !== block.isWholeField);
   };
 
   const durations = DURATIONS.includes(initialDuration)
@@ -73,16 +74,21 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
     try {
       const newFrom = new Date(`${form.date}T${form.time}`);
       const newTo = new Date(newFrom.getTime() + Number(form.duration) * 60000);
-      const prices = splitPrice(Number(whole.price), slots.length);
       await api.patch("/v1/slots", {
         from: newFrom.toISOString(),
         to: newTo.toISOString(),
-        slots: block.isWholeField
-          ? slots.map((s, i) => ({
-              id: s.id,
-              name: whole.name.trim() || null,
-              price: prices[i],
-            }))
+        // Single booking: one entry with the size flag; the server creates, updates or
+        // deletes the other pitch's slot and splits a whole-field price. Going whole → half
+        // keeps the first pitch (teams use whichever half is free).
+        slots: isSingleBooking
+          ? [
+              {
+                id: block.slots[0].id,
+                name: single.name.trim() || null,
+                price: Number(single.price),
+                isWholeField: isWhole,
+              },
+            ]
           : slots.map((s) => ({
               id: s.id,
               name: s.name.trim() || null,
@@ -93,7 +99,11 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
       onClose();
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setError("That time is already taken on this field.");
+        setError(
+          isSingleBooking && isWhole && !block.isWholeField
+            ? "The rest of the field is not free at that time."
+            : "That time is already taken on this field."
+        );
       } else {
         setError(err instanceof Error ? err.message : "Failed to update session");
       }
@@ -233,29 +243,62 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
             </select>
           </div>
 
-          {block.isWholeField ? (
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Whole field</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={whole.name}
-                  onChange={(e) => setWhole((w) => ({ ...w, name: e.target.value }))}
-                  className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
-                />
-                <input
-                  type="number"
-                  required
-                  min={0}
-                  step="0.01"
-                  placeholder="Price"
-                  value={whole.price}
-                  onChange={(e) => setWhole((w) => ({ ...w, price: e.target.value }))}
-                  className="w-28 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
-                />
+          {isSingleBooking ? (
+            <>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">Size</label>
+                <div className="flex gap-2">
+                  {[true, false].map((toWhole) => (
+                    <button
+                      key={String(toWhole)}
+                      type="button"
+                      onClick={() => changeSize(toWhole)}
+                      className={`flex-1 text-sm font-medium rounded-lg px-3 py-2 border transition-colors ${
+                        isWhole === toWhole
+                          ? "bg-fkb-pale text-fkb-dark border-fkb-dark/40"
+                          : "bg-white text-gray-600 border-fkb-border hover:bg-fkb-bg"
+                      }`}
+                    >
+                      {toWhole ? "Whole field" : "Half"}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  {isWhole
+                    ? "Whole field"
+                    : block.isWholeField
+                      ? "Half"
+                      : (pitchNames.get(block.slots[0].pitchId) ?? "Pitch")}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={single.name}
+                    onChange={(e) => setSingle((s) => ({ ...s, name: e.target.value }))}
+                    className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
+                  />
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    step="0.01"
+                    placeholder="Price"
+                    value={single.price}
+                    onChange={(e) => setSingle((s) => ({ ...s, price: e.target.value }))}
+                    className="w-28 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fkb-mid"
+                  />
+                </div>
+                {priceWarning && (
+                  <p className="text-sm font-medium text-amber-800 bg-amber-50 border border-amber-300 rounded-lg px-3 py-2">
+                    The size changed. Please check the price.
+                  </p>
+                )}
+              </div>
+            </>
           ) : slots.map((slot) => (
             <div key={slot.id} className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">
@@ -301,7 +344,7 @@ export default function EditBlockModal({ block, onClose, onSaved }: Props) {
               <button
                 type="button"
                 onClick={() => openCancel(slots.map((s) => s.id), "this session")}
-                className="mr-auto text-sm font-medium text-fkb-danger bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+                className="mr-auto text-sm font-medium text-gray-600 bg-gray-100 hover:text-fkb-danger hover:bg-red-50 px-4 py-2 rounded-lg transition-colors"
               >
                 Delete session
               </button>
